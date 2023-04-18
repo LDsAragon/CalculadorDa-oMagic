@@ -1,3 +1,8 @@
+let spellDamage = 0;
+let numberOfCopies = 0;
+let finalSpellsQuantityValue = 0;
+let duplicatedByArtifact = 0;
+
 function calculateSpellDamage(
   numberOfCopySpells,
   damage,
@@ -5,6 +10,16 @@ function calculateSpellDamage(
   isFirstSpellOfTurn,
   isArtifactDuplicatorOfDuplicationsPresent
 ) {
+  let finalSpellsQuantityValue = calculateNumberOfCopies(
+    numberOfCopySpells,
+    isDuplicatorEnchantmentPresent,
+    isFirstSpellOfTurn,
+    isArtifactDuplicatorOfDuplicationsPresent
+  );
+
+  spellDamage = finalSpellsQuantityValue * damage;
+  printDamageDetails(damage, numberOfCopySpells);
+
   return (
     numberOfCopies(
       numberOfCopySpells,
@@ -22,18 +37,16 @@ const CANTIDAD_COPIAS_ARTEFACTO =
 const CANTIDAD_TOTAL_HECHIZOS = 'Cantidad total de Hechizos ';
 const CANTIDAD_DE_COPIAS = 'Cantidad de Copias ';
 
-function numberOfCopies(
+function calculateNumberOfCopies(
   numberOfCopySpells,
-  damage,
   isDuplicatorEnchantmentPresent,
   isFirstSpellOfTurn,
   isArtifactDuplicatorOfDuplicationsPresent
 ) {
-  let spellDamage = 0;
-  let numberOfCopies = 0;
-  let finalSpellsQuantityValue = 0;
-  let duplicatedByArtifact = 0;
-  let result;
+  spellDamage = 0;
+  numberOfCopies = 0;
+  finalSpellsQuantityValue = 0;
+  duplicatedByArtifact = 0;
 
   if (isDuplicatorEnchantmentPresent && isFirstSpellOfTurn) {
     numberOfCopySpells = numberOfCopySpells + 1;
@@ -41,17 +54,17 @@ function numberOfCopies(
 
   if (isArtifactDuplicatorOfDuplicationsPresent) {
     for (
-      let horizontalidad = 1;
-      horizontalidad < numberOfCopySpells + 1;
-      horizontalidad++
+      let cycleLevel = 1;
+      cycleLevel < numberOfCopySpells + 1;
+      cycleLevel++
     ) {
-      if (horizontalidad === 1 && numberOfCopySpells === 1) {
+      if (cycleLevel === 1 && numberOfCopySpells === 1) {
         duplicatedByArtifact = 1;
-        numberOfCopies = horizontalidad + duplicatedByArtifact;
-      } else if (horizontalidad === 2) {
+        numberOfCopies = cycleLevel + duplicatedByArtifact;
+      } else if (cycleLevel === 2) {
         duplicatedByArtifact = 1;
-        numberOfCopies = horizontalidad + duplicatedByArtifact;
-      } else if (horizontalidad >= 3) {
+        numberOfCopies = cycleLevel + duplicatedByArtifact;
+      } else if (cycleLevel >= 3) {
         duplicatedByArtifact = numberOfCopies;
         numberOfCopies = numberOfCopies + duplicatedByArtifact;
       }
@@ -64,22 +77,23 @@ function numberOfCopies(
   //Sumo el hechizo inicial
   finalSpellsQuantityValue = numberOfCopies + 1;
 
-  if (damage === 0) {
-    console.log(CANTIDAD_CICLOS + numberOfCopySpells);
-    console.log(CANTIDAD_COPIAS_ARTEFACTO + duplicatedByArtifact);
-    console.log(CANTIDAD_DE_COPIAS + numberOfCopies);
-    console.log(CANTIDAD_TOTAL_HECHIZOS + finalSpellsQuantityValue);
-
-    result = finalSpellsQuantityValue;
-  } else {
-    spellDamage = finalSpellsQuantityValue * damage;
-
-    console.log(CANTIDAD_CICLOS + numberOfCopySpells);
-    console.log(CANTIDAD_COPIAS_ARTEFACTO + duplicatedByArtifact);
-    console.log(CANTIDAD_DE_COPIAS + numberOfCopies);
-    console.log(CANTIDAD_TOTAL_HECHIZOS + finalSpellsQuantityValue);
-    console.log('Daño Inicial ' + damage + ' Daño Final ' + spellDamage);
-  }
+  printSpellDetails(numberOfCopySpells);
 
   return finalSpellsQuantityValue;
 }
+
+function printSpellDetails(numberOfCopySpells) {
+
+    console.log(CANTIDAD_CICLOS + numberOfCopySpells);
+    console.log(CANTIDAD_COPIAS_ARTEFACTO + duplicatedByArtifact);
+    console.log(CANTIDAD_DE_COPIAS + numberOfCopies);
+    console.log(CANTIDAD_TOTAL_HECHIZOS + finalSpellsQuantityValue);
+}
+
+function printDamageDetails(damage, numberOfCopySpells) {
+      console.log(CANTIDAD_CICLOS + numberOfCopySpells);
+      console.log(CANTIDAD_COPIAS_ARTEFACTO + duplicatedByArtifact);
+      console.log(CANTIDAD_DE_COPIAS + numberOfCopies);
+      console.log(CANTIDAD_TOTAL_HECHIZOS + finalSpellsQuantityValue);
+      console.log('Daño Inicial ' + damage + ' Daño Final ' + spellDamage);
+  }
