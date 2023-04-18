@@ -119,7 +119,8 @@ function printSpellDetails(
   numberOfCopySpells,
   isArtifactDuplicatorOfDuplicationsPresent
 ) {
-  console.log(CANTIDAD_CICLOS + numberOfCopySpells);
+    console.log("Hechizos Lanzados de la mano "  + (numberOfCopySpells + 1) + (" (Copiadores " +numberOfCopySpells + " Otro " + 1 + ")" ) );
+    console.log(CANTIDAD_CICLOS + numberOfCopySpells);
 
   if (isArtifactDuplicatorOfDuplicationsPresent) {
     console.log(CANTIDAD_COPIAS_ARTEFACTO + duplicatedByArtifact);
@@ -134,7 +135,8 @@ function printDamageDetails(
   numberOfCopySpells,
   isArtifactDuplicatorOfDuplicationsPresent
 ) {
-  console.log(CANTIDAD_CICLOS + numberOfCopySpells);
+    console.log("Hechizos Lanzados de la mano "  + (numberOfCopySpells + 1) + (" (Copiadores " +numberOfCopySpells + " Otro " + 1 + ")" ) );
+    console.log(CANTIDAD_CICLOS + numberOfCopySpells);
 
   if (isArtifactDuplicatorOfDuplicationsPresent) {
     console.log(CANTIDAD_COPIAS_ARTEFACTO + duplicatedByArtifact);
