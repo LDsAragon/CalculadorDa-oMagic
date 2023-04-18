@@ -2,6 +2,7 @@ let spellDamage = 0;
 let numberOfCopies = 0;
 let finalSpellsQuantityValue = 0;
 let duplicatedByArtifact = 0;
+let printCopyCalculationLogs = true;
 
 function calculateSpellDamage(
   numberOfCopySpells,
@@ -14,21 +15,14 @@ function calculateSpellDamage(
     numberOfCopySpells,
     isDuplicatorEnchantmentPresent,
     isFirstSpellOfTurn,
-    isArtifactDuplicatorOfDuplicationsPresent
+    isArtifactDuplicatorOfDuplicationsPresent,
+    false
   );
 
   spellDamage = finalSpellsQuantityValue * damage;
   printDamageDetails(damage, numberOfCopySpells);
 
-  return (
-    numberOfCopies(
-      numberOfCopySpells,
-      damage,
-      isDuplicatorEnchantmentPresent,
-      isFirstSpellOfTurn,
-      isArtifactDuplicatorOfDuplicationsPresent
-    ) * damage
-  );
+  return spellDamage;
 }
 
 const CANTIDAD_CICLOS = 'Cantidad de Ciclos ';
@@ -41,7 +35,8 @@ function calculateNumberOfCopies(
   numberOfCopySpells,
   isDuplicatorEnchantmentPresent,
   isFirstSpellOfTurn,
-  isArtifactDuplicatorOfDuplicationsPresent
+  isArtifactDuplicatorOfDuplicationsPresent,
+  printCopyCalculationLogs
 ) {
   spellDamage = 0;
   numberOfCopies = 0;
@@ -77,23 +72,24 @@ function calculateNumberOfCopies(
   //Sumo el hechizo inicial
   finalSpellsQuantityValue = numberOfCopies + 1;
 
-  printSpellDetails(numberOfCopySpells);
+  if (printCopyCalculationLogs) {
+    printSpellDetails(numberOfCopySpells);
+  }
 
   return finalSpellsQuantityValue;
 }
 
 function printSpellDetails(numberOfCopySpells) {
-
-    console.log(CANTIDAD_CICLOS + numberOfCopySpells);
-    console.log(CANTIDAD_COPIAS_ARTEFACTO + duplicatedByArtifact);
-    console.log(CANTIDAD_DE_COPIAS + numberOfCopies);
-    console.log(CANTIDAD_TOTAL_HECHIZOS + finalSpellsQuantityValue);
+  console.log(CANTIDAD_CICLOS + numberOfCopySpells);
+  console.log(CANTIDAD_COPIAS_ARTEFACTO + duplicatedByArtifact);
+  console.log(CANTIDAD_DE_COPIAS + numberOfCopies);
+  console.log(CANTIDAD_TOTAL_HECHIZOS + finalSpellsQuantityValue);
 }
 
 function printDamageDetails(damage, numberOfCopySpells) {
-      console.log(CANTIDAD_CICLOS + numberOfCopySpells);
-      console.log(CANTIDAD_COPIAS_ARTEFACTO + duplicatedByArtifact);
-      console.log(CANTIDAD_DE_COPIAS + numberOfCopies);
-      console.log(CANTIDAD_TOTAL_HECHIZOS + finalSpellsQuantityValue);
-      console.log('Daño Inicial ' + damage + ' Daño Final ' + spellDamage);
-  }
+  console.log(CANTIDAD_CICLOS + numberOfCopySpells);
+  console.log(CANTIDAD_COPIAS_ARTEFACTO + duplicatedByArtifact);
+  console.log(CANTIDAD_DE_COPIAS + numberOfCopies);
+  console.log(CANTIDAD_TOTAL_HECHIZOS + finalSpellsQuantityValue);
+  console.log('Daño Inicial ' + damage + ' Daño Final ' + spellDamage);
+}
