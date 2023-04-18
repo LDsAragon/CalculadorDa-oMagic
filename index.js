@@ -97,10 +97,13 @@ function calculateSpellDuplicationWithArtifact(numberOfCopySpells) {
     if (cycleLevel === 1) {
       duplicatedByArtifact = 1;
       numberOfCopies = cycleLevel + duplicatedByArtifact;
-    } else if (cycleLevel >= 2) {
+    } else if (cycleLevel === 2) {
+      duplicatedByArtifact = 1;
+      numberOfCopies = cycleLevel + duplicatedByArtifact;
+    } else if (cycleLevel >= 3) {
       duplicatedByArtifact = numberOfCopies;
       numberOfCopies = numberOfCopies * 2;
-    } 
+    }
   }
 }
 
