@@ -95,15 +95,15 @@ function calculateNumberOfCopies(
 
 function calculateSpellDuplicationWithArtifact(numberOfCopySpells) {
   for (let cycleLevel = 1; cycleLevel < numberOfCopySpells + 1; cycleLevel++) {
-    if (cycleLevel === 1 && numberOfCopySpells === 1) {
+    if (cycleLevel === 1) {
       duplicatedByArtifact = 1;
       numberOfCopies = cycleLevel + duplicatedByArtifact;
     } else if (cycleLevel === 2) {
-      duplicatedByArtifact = 1;
+      duplicatedByArtifact = cycleLevel;
       numberOfCopies = cycleLevel + duplicatedByArtifact;
     } else if (cycleLevel >= 3) {
       duplicatedByArtifact = numberOfCopies;
-      numberOfCopies = numberOfCopies + duplicatedByArtifact;
+      numberOfCopies = numberOfCopies * 2;
     }
   }
 }
