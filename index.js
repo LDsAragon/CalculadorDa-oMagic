@@ -41,7 +41,11 @@ function calculateSpellDamage(
   spellDamage = finalSpellsQuantityValue * damage;
 
   if (printDamageCalculationLogs) {
-    printDamageDetails(damage, numberOfCopySpells,isArtifactDuplicatorOfDuplicationsPresent);
+    printDamageDetails(
+      damage,
+      numberOfCopySpells,
+      isArtifactDuplicatorOfDuplicationsPresent
+    );
   }
 
   return spellDamage;
@@ -72,7 +76,8 @@ function calculateNumberOfCopies(
   if (isArtifactDuplicatorOfDuplicationsPresent) {
     calculateSpellDuplicationWithArtifact(numberOfCopySpells);
   } else {
-    calculateSpellDuplication(numberOfCopySpells);
+    //calculateSpellDuplication(numberOfCopySpells);
+    numberOfCopies = numberOfCopySpells;
   }
 
   //Sumo el hechizo inicial
@@ -89,38 +94,34 @@ function calculateNumberOfCopies(
 }
 
 function calculateSpellDuplicationWithArtifact(numberOfCopySpells) {
-    for (let cycleLevel = 1; cycleLevel < numberOfCopySpells + 1; cycleLevel++) {
-        if (cycleLevel === 1 && numberOfCopySpells === 1) {
-            duplicatedByArtifact = 1;
-            numberOfCopies = cycleLevel + duplicatedByArtifact;
-        } else if (cycleLevel === 2) {
-            duplicatedByArtifact = cycleLevel;
-            numberOfCopies = (cycleLevel * 2) + duplicatedByArtifact;
-        } else if (cycleLevel >= 3) {
-            duplicatedByArtifact = numberOfCopies;
-            numberOfCopies = (numberOfCopies *2) + duplicatedByArtifact;
-        }
+  for (let cycleLevel = 1; cycleLevel < numberOfCopySpells + 1; cycleLevel++) {
+    if (cycleLevel === 1 && numberOfCopySpells === 1) {
+      duplicatedByArtifact = 1;
+      numberOfCopies = cycleLevel + duplicatedByArtifact;
+    } else if (cycleLevel === 2) {
+      duplicatedByArtifact = 1;
+      numberOfCopies = cycleLevel + duplicatedByArtifact;
+    } else if (cycleLevel >= 3) {
+      duplicatedByArtifact = numberOfCopies;
+      numberOfCopies = numberOfCopies + duplicatedByArtifact;
     }
+  }
 }
 
 function calculateSpellDuplication(numberOfCopySpells) {
-    for (let cycleLevel = 1; cycleLevel < numberOfCopySpells + 1; cycleLevel++) {
-        if (cycleLevel === 1 && numberOfCopySpells === 1) {
-            numberOfCopies = 1;
-        } else if (cycleLevel === 2) {
-            numberOfCopies = cycleLevel * 2;
-        } else if (cycleLevel >= 3) {
-            numberOfCopies = numberOfCopies * 2;
-        }
-    }
+    numberOfCopies = numberOfCopySpells;
 }
 
 function printSpellDetails(
   numberOfCopySpells,
   isArtifactDuplicatorOfDuplicationsPresent
 ) {
-    console.log("Hechizos Lanzados de la mano "  + (numberOfCopySpells + 1) + (" (Copiadores " +numberOfCopySpells + " Otro " + 1 + ")" ) );
-    console.log(CANTIDAD_CICLOS + numberOfCopySpells);
+  console.log(
+    'Hechizos Lanzados de la mano ' +
+      (numberOfCopySpells + 1) +
+      (' (Copiadores ' + numberOfCopySpells + ' Otro ' + 1 + ')')
+  );
+  console.log(CANTIDAD_CICLOS + numberOfCopySpells);
 
   if (isArtifactDuplicatorOfDuplicationsPresent) {
     console.log(CANTIDAD_COPIAS_ARTEFACTO + duplicatedByArtifact);
@@ -135,8 +136,12 @@ function printDamageDetails(
   numberOfCopySpells,
   isArtifactDuplicatorOfDuplicationsPresent
 ) {
-    console.log("Hechizos Lanzados de la mano "  + (numberOfCopySpells + 1) + (" (Copiadores " +numberOfCopySpells + " Otro " + 1 + ")" ) );
-    console.log(CANTIDAD_CICLOS + numberOfCopySpells);
+  console.log(
+    'Hechizos Lanzados de la mano ' +
+      (numberOfCopySpells + 1) +
+      (' (Copiadores ' + numberOfCopySpells + ' Otro ' + 1 + ')')
+  );
+  console.log(CANTIDAD_CICLOS + numberOfCopySpells);
 
   if (isArtifactDuplicatorOfDuplicationsPresent) {
     console.log(CANTIDAD_COPIAS_ARTEFACTO + duplicatedByArtifact);
