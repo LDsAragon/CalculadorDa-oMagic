@@ -3,6 +3,9 @@ let numberOfCopies = 0;
 let finalSpellsQuantityValue = 0;
 let duplicatedByArtifact = 0;
 let printCopyCalculationLogs = true;
+let arrayCiclos = ["Vacio","Primero", "Segundo", "Tercero","Cuarto","Quinto","Sexto","Septimo"]
+
+let mapa = new Map([])
 
 function graphSpellDamage(
   numberOfCopySpells,
@@ -48,6 +51,10 @@ function calculateSpellDamage(
     );
   }
 
+  
+  //Array.from(mapa)[(mapa.size-1)]  
+  mapa.get(arrayCiclos[(mapa.size)]).set("HechizoOriginal" + damage)
+  console.log(mapa) ; 
   return spellDamage;
 }
 
@@ -68,6 +75,7 @@ function calculateNumberOfCopies(
   numberOfCopies = 0;
   finalSpellsQuantityValue = 0;
   duplicatedByArtifact = 0;
+  mapa = new Map([]) ;
 
   if (isDuplicatorEnchantmentPresent && isFirstSpellOfTurn) {
     numberOfCopySpells = numberOfCopySpells + 1;
@@ -93,21 +101,33 @@ function calculateNumberOfCopies(
 }
 
 function calculateSpellDuplicationWithArtifact(numberOfCopySpells) {
+  console.log("calculateSpellDuplicationWithArtifact")
   for (let cycleLevel = 1; cycleLevel < numberOfCopySpells + 1; cycleLevel++) {
+
+    let nombreNivel = arrayCiclos[cycleLevel] ; 
+
+
     if (cycleLevel === 1) {
-      duplicatedByArtifact = 1;
+      agregarNivel(nombreNivel)
+      duplicatedByArtifact = cycleLevel;
       numberOfCopies = cycleLevel + duplicatedByArtifact;
+      agregarItemsAlNivelActualDelMapa(cycleLevel,nombreNivel, cycleLevel,duplicatedByArtifact)
     } else if (cycleLevel === 2) {
       duplicatedByArtifact = 1;
       numberOfCopies = cycleLevel + duplicatedByArtifact;
+      agregarNivel(nombreNivel)
+      agregarItemsAlNivelActualDelMapa(cycleLevel,nombreNivel, cycleLevel,duplicatedByArtifact)
     } else if (cycleLevel >= 3) {
+      agregarNivel(nombreNivel)
       duplicatedByArtifact = numberOfCopies;
-      numberOfCopies = numberOfCopies * 2;
+      numberOfCopies = numberOfCopies * 2; // numberOfCopies + duplicatedByArtifact
+      agregarItemsAlNivelActualDelMapa(cycleLevel,nombreNivel, duplicatedByArtifact,duplicatedByArtifact)
     }
   }
 }
 
 function calculateSpellDuplication(numberOfCopySpells) {
+  console.log("calculateSpellDuplication")
     numberOfCopies = numberOfCopySpells;
 }
 
@@ -148,4 +168,22 @@ function printDamageDetails(
   console.log(CANTIDAD_DE_COPIAS + numberOfCopies);
   console.log(CANTIDAD_TOTAL_HECHIZOS + finalSpellsQuantityValue);
   console.log('Daño Inicial ' + damage + ' Daño Final ' + spellDamage);
+}
+
+
+function agregarNivel(nombreNivel) {
+  mapa.set(nombreNivel, new Map([]))
+}
+
+function agregarItemsAlNivelActualDelMapa(nivel, nombreNivel,numberOfCopies, copiadasDelArtefacto ) {
+  let currentMap = new Map([]) ;  
+  currentMap  = mapa.get(nombreNivel);
+  for (let i = 0; i < numberOfCopies; i++) {
+    currentMap.set(arrayCiclos[nivel] + "[" + i + "]",arrayCiclos[nivel] +  "[" + i + "]")
+
+  }
+
+  for (let i = 0; i < copiadasDelArtefacto; i++) {
+    currentMap.set( "CopiaDe" + arrayCiclos[nivel] + "[" + i + "]" + "CopiaDe" + arrayCiclos[nivel] +  "[" + i + "]")
+  }
 }
