@@ -16,22 +16,10 @@ let arrayCiclos = [
 
 let mapa = new Map([]);
 
-function graphSpellDamage(
-  numberOfCopySpells,
-  damage,
-  isDuplicatorEnchantmentPresent,
-  isFirstSpellOfTurn,
-  isArtifactDuplicatorOfDuplicationsPresent
-) {
-  let finalSpellsQuantityValue = calculateNumberOfCopies(
-    numberOfCopySpells,
-    isDuplicatorEnchantmentPresent,
-    isFirstSpellOfTurn,
-    isArtifactDuplicatorOfDuplicationsPresent,
-    false
-  );
-
-  finalSpellsQuantityValue;
+function graphSpellDamage() {
+ 
+  transformMapToObject()
+  
 }
 
 function calculateSpellDamage(
@@ -58,6 +46,8 @@ function calculateSpellDamage(
       numberOfCopySpells,
       isArtifactDuplicatorOfDuplicationsPresent
     );
+
+    graphSpellDamage()
   }
 
   //Array.from(mapa)[(mapa.size-1)]
@@ -102,6 +92,8 @@ function calculateNumberOfCopies(
       numberOfCopySpells,
       isArtifactDuplicatorOfDuplicationsPresent
     );
+
+    graphSpellDamage()
   }
 
   return finalSpellsQuantityValue;
@@ -242,3 +234,43 @@ function agregarItemsAlNivelActualDelMapa(
   }
 }
 
+/**
+ * Transforms the mapa into a object
+ * And returns it.
+ *
+ * @returns objectified global variable mapa.
+ */
+function transformMapToObject() {
+  /** Transform main Map into object */
+  let obj = Array.from(mapa);
+
+  /** Transform submap into object and set it to obj */
+  for (let i = 1; i < mapa.size+1; i++) {
+
+
+    
+    try {
+      let internalObj = Array.from(mapa.get(arrayCiclos[i])) ;
+
+      //clean duplitaded pair keyvalues
+      for (let i = 0; i < internalObj.length; i++) {
+        internalObj[i] = internalObj[i][0] //select first element
+      }
+      
+      if(i > 0) {
+        let varToSearch =  (i-1);
+        obj[varToSearch] = internalObj;
+      }
+      
+    } catch (error) {
+      console.log("Search for object " + i +" is undefined Error:" + error)
+    }
+
+
+
+  }
+
+  console.log(obj);
+  window.obj = obj ;
+  return obj;
+}
