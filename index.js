@@ -3,9 +3,18 @@ let numberOfCopies = 0;
 let finalSpellsQuantityValue = 0;
 let duplicatedByArtifact = 0;
 let printCopyCalculationLogs = true;
-let arrayCiclos = ["Vacio","Primero", "Segundo", "Tercero","Cuarto","Quinto","Sexto","Septimo"]
+let arrayCiclos = [
+  'SinIteracion',
+  'Primero',
+  'Segundo',
+  'Tercero',
+  'Cuarto',
+  'Quinto',
+  'Sexto',
+  'Septimo',
+];
 
-let mapa = new Map([])
+let mapa = new Map([]);
 
 function graphSpellDamage(
   numberOfCopySpells,
@@ -51,10 +60,9 @@ function calculateSpellDamage(
     );
   }
 
-  
-  //Array.from(mapa)[(mapa.size-1)]  
-  mapa.get(arrayCiclos[(mapa.size)]).set("HechizoOriginal" + damage)
-  console.log(mapa) ; 
+  //Array.from(mapa)[(mapa.size-1)]
+  //mapa.get(arrayCiclos[(mapa.size)]).set("HechizoOriginal" + damage)
+  console.log(mapa);
   return spellDamage;
 }
 
@@ -75,7 +83,7 @@ function calculateNumberOfCopies(
   numberOfCopies = 0;
   finalSpellsQuantityValue = 0;
   duplicatedByArtifact = 0;
-  mapa = new Map([]) ;
+  mapa = new Map([]);
 
   if (isDuplicatorEnchantmentPresent && isFirstSpellOfTurn) {
     numberOfCopySpells = numberOfCopySpells + 1;
@@ -84,11 +92,10 @@ function calculateNumberOfCopies(
   if (isArtifactDuplicatorOfDuplicationsPresent) {
     calculateSpellDuplicationWithArtifact(numberOfCopySpells);
   } else {
-    numberOfCopies = numberOfCopySpells;
+    calculateSpellDuplication(numberOfCopySpells) ;
   }
 
-  //Sumo el hechizo inicial
-  finalSpellsQuantityValue = numberOfCopies + 1;
+  finalSpellsQuantityValue = numberOfCopies;
 
   if (printCopyCalculationLogs) {
     printSpellDetails(
@@ -101,39 +108,65 @@ function calculateNumberOfCopies(
 }
 
 function calculateSpellDuplicationWithArtifact(numberOfCopySpells) {
-  console.log("calculateSpellDuplicationWithArtifact")
+  console.log('calculateSpellDuplicationWithArtifact');
+
+  let nombreNivel = arrayCiclos[numberOfCopySpells];
+  let castedSpell = 1;
+
+  if (numberOfCopySpells === 0) {
+    agregarNivel(nombreNivel);
+    numberOfCopies = castedSpell;
+    agregarItemsAlNivelActualDelMapa(
+      numberOfCopySpells,
+      nombreNivel,
+      numberOfCopies,
+      duplicatedByArtifact
+    );
+  }
+
   for (let cycleLevel = 1; cycleLevel < numberOfCopySpells + 1; cycleLevel++) {
-
-    let nombreNivel = arrayCiclos[cycleLevel] ; 
-
+    nombreNivel = arrayCiclos[cycleLevel];
 
     if (cycleLevel === 1) {
-      agregarNivel(nombreNivel)
+      agregarNivel(nombreNivel);
       duplicatedByArtifact = cycleLevel;
-      numberOfCopies = cycleLevel + duplicatedByArtifact;
-      agregarItemsAlNivelActualDelMapa(cycleLevel,nombreNivel, cycleLevel,duplicatedByArtifact)
-    } else if (cycleLevel === 2 && numberOfCopySpells === 2) {
+      numberOfCopies = cycleLevel + duplicatedByArtifact + castedSpell;
+      agregarItemsAlNivelActualDelMapa(
+        cycleLevel,
+        nombreNivel,
+        cycleLevel,
+        duplicatedByArtifact,
+        castedSpell
+      );
+    } else if (cycleLevel === 2) {
       duplicatedByArtifact = numberOfCopies;
-      numberOfCopies = cycleLevel + duplicatedByArtifact;
-      agregarNivel(nombreNivel)
-      agregarItemsAlNivelActualDelMapa(cycleLevel,nombreNivel, cycleLevel,duplicatedByArtifact)
-    } else if (cycleLevel === 2  ) {
-      duplicatedByArtifact = 1;
-      numberOfCopies = cycleLevel + duplicatedByArtifact;
-      agregarNivel(nombreNivel)
-      agregarItemsAlNivelActualDelMapa(cycleLevel,nombreNivel, cycleLevel,duplicatedByArtifact)
+      numberOfCopies = numberOfCopies + duplicatedByArtifact + castedSpell;
+      agregarNivel(nombreNivel);
+      agregarItemsAlNivelActualDelMapa(
+        cycleLevel,
+        nombreNivel,
+        duplicatedByArtifact,
+        duplicatedByArtifact,
+        castedSpell
+      );
     } else if (cycleLevel >= 3) {
-      agregarNivel(nombreNivel)
+      agregarNivel(nombreNivel);
       duplicatedByArtifact = numberOfCopies;
-      numberOfCopies = numberOfCopies * 2; // numberOfCopies + duplicatedByArtifact
-      agregarItemsAlNivelActualDelMapa(cycleLevel,nombreNivel, duplicatedByArtifact,duplicatedByArtifact)
+      numberOfCopies = numberOfCopies * 2 + castedSpell; // numberOfCopies + duplicatedByArtifact
+      agregarItemsAlNivelActualDelMapa(
+        cycleLevel,
+        nombreNivel,
+        duplicatedByArtifact,
+        duplicatedByArtifact,
+        castedSpell
+      );
     }
   }
 }
 
 function calculateSpellDuplication(numberOfCopySpells) {
-  console.log("calculateSpellDuplication")
-    numberOfCopies = numberOfCopySpells;
+  console.log('calculateSpellDuplication');
+  numberOfCopies = numberOfCopySpells + 1;
 }
 
 function printSpellDetails(
@@ -175,20 +208,37 @@ function printDamageDetails(
   console.log('Daño Inicial ' + damage + ' Daño Final ' + spellDamage);
 }
 
-
 function agregarNivel(nombreNivel) {
-  mapa.set(nombreNivel, new Map([]))
+  mapa.set(nombreNivel, new Map([]));
 }
 
-function agregarItemsAlNivelActualDelMapa(nivel, nombreNivel,numberOfCopies, copiadasDelArtefacto ) {
-  let currentMap = new Map([]) ;  
-  currentMap  = mapa.get(nombreNivel);
-  for (let i = 0; i < numberOfCopies; i++) {
-    currentMap.set(arrayCiclos[nivel] + "[" + i + "]",arrayCiclos[nivel] +  "[" + i + "]")
+function agregarItemsAlNivelActualDelMapa(
+  nivel,
+  nombreNivel,
+  numberOfCopies,
+  copiadasDelArtefacto,
+  castedSpell
+) {
+  let currentMap = new Map([]);
 
+  currentMap = mapa.get(nombreNivel);
+  for (let i = 0; i < numberOfCopies; i++) {
+    let COPIA = 'Copia' + '[' + '(replace)' + ']';
+
+    COPIA = COPIA.replace('(replace)', i);
+    currentMap.set(COPIA, COPIA);
   }
 
   for (let i = 0; i < copiadasDelArtefacto; i++) {
-    currentMap.set( "CopiaDe" + arrayCiclos[nivel] + "[" + i + "]" + "CopiaDe" + arrayCiclos[nivel] +  "[" + i + "]")
+    let COPIA_ARTEFACTO = 'CopiaArtefacto' + '[' + '(replace)' + ']';
+    COPIA_ARTEFACTO = COPIA_ARTEFACTO.replace('(replace)', i);
+    currentMap.set(COPIA_ARTEFACTO, COPIA_ARTEFACTO);
+  }
+
+  for (let i = 0; i < castedSpell; i++) {
+    let HECHIZO = 'CastedSpell' + '[' + '(replace)' + ']';
+    HECHIZO = HECHIZO.replace('(replace)', nivel);
+    currentMap.set(HECHIZO, HECHIZO);
   }
 }
+
