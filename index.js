@@ -112,7 +112,12 @@ function calculateSpellDuplicationWithArtifact(numberOfCopySpells) {
       duplicatedByArtifact = cycleLevel;
       numberOfCopies = cycleLevel + duplicatedByArtifact;
       agregarItemsAlNivelActualDelMapa(cycleLevel,nombreNivel, cycleLevel,duplicatedByArtifact)
-    } else if (cycleLevel === 2) {
+    } else if (cycleLevel === 2 && numberOfCopySpells === 2) {
+      duplicatedByArtifact = numberOfCopies;
+      numberOfCopies = cycleLevel + duplicatedByArtifact;
+      agregarNivel(nombreNivel)
+      agregarItemsAlNivelActualDelMapa(cycleLevel,nombreNivel, cycleLevel,duplicatedByArtifact)
+    } else if (cycleLevel === 2  ) {
       duplicatedByArtifact = 1;
       numberOfCopies = cycleLevel + duplicatedByArtifact;
       agregarNivel(nombreNivel)
