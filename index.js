@@ -4,14 +4,23 @@ let finalSpellsQuantityValue = 0;
 let duplicatedByArtifact = 0;
 let printCopyCalculationLogs = true;
 let arrayCiclos = [
-  'SinIteracion',
-  'Primero',
-  'Segundo',
-  'Tercero',
-  'Cuarto',
-  'Quinto',
-  'Sexto',
-  'Septimo',
+  '0',
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  '10',
+  '11',
+  '12',
+  '13',
+  '14',
+  '15',
+  '16',
 ];
 
 let mapa = new Map([]);
@@ -50,8 +59,6 @@ function calculateSpellDamage(
     graphSpellDamage()
   }
 
-  //Array.from(mapa)[(mapa.size-1)]
-  //mapa.get(arrayCiclos[(mapa.size)]).set("HechizoOriginal" + damage)
   console.log(mapa);
   return spellDamage;
 }
@@ -271,6 +278,6 @@ function transformMapToObject() {
   }
 
   console.log(obj);
-  window.obj = obj ;
+  window.arrayFromMap = obj ;
   return obj;
 }
