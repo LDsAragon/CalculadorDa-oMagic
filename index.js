@@ -26,9 +26,7 @@ let arrayCiclos = [
 let mapa = new Map([]);
 
 function graphSpellDamage() {
- 
-  transformMapToObject()
-  
+  transformMapToObject();
 }
 
 function calculateSpellDamage(
@@ -56,10 +54,12 @@ function calculateSpellDamage(
       isArtifactDuplicatorOfDuplicationsPresent
     );
 
-    graphSpellDamage()
+    if(mapa.size >0){
+      graphSpellDamage();
+    }
+    
   }
 
-  console.log(mapa);
   return spellDamage;
 }
 
@@ -87,12 +87,16 @@ function calculateNumberOfCopies(
   }
 
   if (isArtifactDuplicatorOfDuplicationsPresent) {
-    calculateSpellDuplicationWithArtifact(numberOfCopySpells);
+    calculateSpellDuplicationWithArtifactGRAPH(numberOfCopySpells);
   } else {
-    calculateSpellDuplication(numberOfCopySpells) ;
+    calculateSpellDuplication(numberOfCopySpells);
   }
 
   finalSpellsQuantityValue = numberOfCopies;
+
+  if (numberOfCopySpells === 0) {
+    finalSpellsQuantityValue = 1;
+  }
 
   if (printCopyCalculationLogs) {
     printSpellDetails(
@@ -100,26 +104,29 @@ function calculateNumberOfCopies(
       isArtifactDuplicatorOfDuplicationsPresent
     );
 
-    graphSpellDamage()
+    if(mapa.size >0){
+      graphSpellDamage();
+    }
   }
 
   return finalSpellsQuantityValue;
 }
 
-function calculateSpellDuplicationWithArtifact(numberOfCopySpells) {
+function calculateSpellDuplicationWithArtifactGRAPH(numberOfCopySpells) {
   console.log('calculateSpellDuplicationWithArtifact');
 
-  let nombreNivel = arrayCiclos[numberOfCopySpells];
   let castedSpell = 1;
+  mapa = new Map([]);
 
   if (numberOfCopySpells === 0) {
+    let nombreNivel = numberOfCopySpells.toString();
     agregarNivel(nombreNivel);
-    numberOfCopies = castedSpell;
     agregarItemsAlNivelActualDelMapa(
       numberOfCopySpells,
       nombreNivel,
       numberOfCopies,
-      duplicatedByArtifact
+      duplicatedByArtifact,
+      castedSpell
     );
   }
 
@@ -137,30 +144,46 @@ function calculateSpellDuplicationWithArtifact(numberOfCopySpells) {
         duplicatedByArtifact,
         castedSpell
       );
-    } else if (cycleLevel === 2) {
+    } else if (cycleLevel >= 2) {
       duplicatedByArtifact = numberOfCopies;
-      numberOfCopies = numberOfCopies + duplicatedByArtifact + castedSpell;
       agregarNivel(nombreNivel);
       agregarItemsAlNivelActualDelMapa(
         cycleLevel,
         nombreNivel,
-        duplicatedByArtifact,
-        duplicatedByArtifact,
-        castedSpell
-      );
-    } else if (cycleLevel >= 3) {
-      agregarNivel(nombreNivel);
-      duplicatedByArtifact = numberOfCopies;
-      numberOfCopies = numberOfCopies * 2 + castedSpell; // numberOfCopies + duplicatedByArtifact
-      agregarItemsAlNivelActualDelMapa(
-        cycleLevel,
-        nombreNivel,
-        duplicatedByArtifact,
+        numberOfCopies,
         duplicatedByArtifact,
         castedSpell
       );
+      numberOfCopies = numberOfCopies * 2 + castedSpell;
     }
   }
+}
+
+function calculateSpellDuplicationWithArtifact2(numberOfCopySpells) {
+  console.log('calculateSpellDuplicationWithArtifact');
+
+  let castedSpell = 1;
+
+  for (let cycleLevel = 1; cycleLevel < numberOfCopySpells + 1; cycleLevel++) {
+    nombreNivel = arrayCiclos[cycleLevel];
+    if (cycleLevel === 1) {
+      duplicatedByArtifact = cycleLevel;
+      numberOfCopies = cycleLevel + duplicatedByArtifact + castedSpell;
+    } else if (cycleLevel >= 2) {
+      duplicatedByArtifact = numberOfCopies;
+      numberOfCopies = numberOfCopies * 2 + castedSpell;
+    }
+  }
+}
+
+function calculateSpellDuplicationWithArtifact3(numberOfCopySpells) {
+  console.log('calculateSpellDuplicationWithArtifact');
+
+  let exponente = numberOfCopySpells + 1;
+
+  numberOfCopies = Math.pow(2, exponente) - 1;
+
+  duplicatedByArtifact = (numberOfCopies - 1)/2 ;
 }
 
 function calculateSpellDuplication(numberOfCopySpells) {
@@ -252,32 +275,27 @@ function transformMapToObject() {
   let obj = Array.from(mapa);
 
   /** Transform submap into object and set it to obj */
-  for (let i = 1; i < mapa.size+1; i++) {
-
-
-    
+  for (let i = 0; i < mapa.size + 1; i++) {
     try {
-      let internalObj = Array.from(mapa.get(arrayCiclos[i])) ;
+      let internalObj = Array.from(mapa.get(arrayCiclos[i]));
 
       //clean duplitaded pair keyvalues
       for (let i = 0; i < internalObj.length; i++) {
-        internalObj[i] = internalObj[i][0] //select first element
+        internalObj[i] = internalObj[i][0]; //select first element
       }
-      
-      if(i > 0) {
-        let varToSearch =  (i-1);
+
+      if (i > 0) {
+        let varToSearch = i - 1;
         obj[varToSearch] = internalObj;
+      } else {
+        obj[i] = internalObj;
       }
-      
     } catch (error) {
-      console.log("Search for object " + i +" is undefined Error:" + error)
+      console.log('Search for object ' + i + ' is undefined ErrorMessage: ' + error);
     }
-
-
-
   }
 
   console.log(obj);
-  window.arrayFromMap = obj ;
+  window.arrayFromMap = obj;
   return obj;
 }
