@@ -9,7 +9,24 @@ let finalSpellsQuantityValue = 0;
 let duplicatedByArtifact = 0;
 let printCopyCalculationLogs = true;
 let numeroDeHehizos;
-let isArtifactDuplicatorPresent = false ;
+let isArtifactDuplicatorPresent = false;
+let formsArray = undefined;
+
+
+function calculateDamageToGraph(){
+  
+  
+  calculateDrawData(
+    Number(document.getElementById("numberOFSpells").value),
+    Number(document.getElementById("damage").value),
+    Boolean(document.getElementById('duplicatorEnchantment').checked),
+    Boolean(document.getElementById('firstTurn').checked),
+    Boolean(document.getElementById('duplicatorArtifact').checked ),
+    Boolean(document.getElementById('writeLogs').checked)
+  )
+
+  draw()
+}
 
 function draw() {
   const $ = go.GraphObject.make; // for conciseness in defining templates
@@ -19,60 +36,70 @@ function draw() {
       'undoManager.isEnabled': true,
     });
 
+    if (formsArray === undefined) {
+      console.log('There was no calculation done, there is nothing to draw');
+      return;
+    }
 
-  // define the "sample" Node template
-  myDiagram.nodeTemplate = $(
-    go.Node,
-    'Auto',
-    new go.Binding('location').makeTwoWay(),
-    $(
-      go.Shape,
-      'RoundedRectangle', // define the node's outer shape
-      { fill: 'white', strokeWidth: 0 },
-      new go.Binding('fill', 'color')
-    ),
-    $(
-      go.TextBlock, // define the node's text
-      { margin: 5 },
-      new go.Binding('text', 'key')
-    )
-  );
+    // define the "sample" Node template
+    myDiagram.nodeTemplate = $(
+      go.Node,
+      'Auto',
+      new go.Binding('location').makeTwoWay(),
+      $(
+        go.Shape,
+        'RoundedRectangle', // define the node's outer shape
+        { fill: 'white', strokeWidth: 0 },
+        new go.Binding('fill', 'color')
+      ),
+      $(
+        go.TextBlock, // define the node's text
+        { margin: 5 },
+        new go.Binding('text', 'key')
+      )
+    );
 
-  myDiagram.linkTemplate = $(
-    go.Link,
-    go.Link.Bezier,
-    $(go.Shape, { strokeWidth: 1.5 }),
-    $(go.Shape, { toArrow: 'Standard' })
-  );
+    myDiagram.linkTemplate = $(
+      go.Link,
+      go.Link.Bezier,
+      $(go.Shape, { strokeWidth: 1.5 }),
+      $(go.Shape, { toArrow: 'Standard' })
+    );
 
-  myDiagram.layout = new go.Layout();
+    myDiagram.layout = new go.Layout();
 
-  let nodesArray ; 
-  let linksArray ; 
+    let nodesArray;
+    let linksArray;
 
-  if(isArtifactDuplicatorPresent) {
-    nodesArray = createArrayOfNodesArticaft(formsArray)
-    linksArray = createArrayOfLinksArtifact(formsArray)
-  } else {
-    nodesArray = createArrayOfNodes(formsArray)
-    linksArray = createArrayOfLinks(formsArray)
+    if (isArtifactDuplicatorPresent) {
+      nodesArray = createArrayOfNodesArticaft(formsArray);
+      linksArray = createArrayOfLinksArtifact(formsArray);
+    } else {
+      nodesArray = createArrayOfNodes(formsArray);
+      linksArray = createArrayOfLinks(formsArray);
+    }
+
+    myDiagram.model = new go.GraphLinksModel(nodesArray, linksArray);
+  } catch (error) {
+    //console.log('Error :' + error);
+    console.log('Cleaning Div');
+    myDiagram.div = null;
+    //console.clear();
+    draw();
   }
-
-  myDiagram.model = new go.GraphLinksModel(
-    nodesArray,
-    linksArray
-  );
-
-} catch (error) {
-  //console.log('Error :' + error);
-  console.log('Cleaning Div');
-  myDiagram.div = null;
-  //console.clear();
-  draw();
-}
 }
 
-function graphSpellDamage(
+function deleteDiagram() {
+  try {
+    myDiagram.div = null;
+    console.log('Deleting diagram! ');
+  } catch (error) {
+    //console.log('Error :' + error);
+    console.log('There is no diagram to delete. First calculate, then draw');
+  }
+}
+
+function calculateDrawData(
   numberOfCopySpells,
   damage,
   isDuplicatorEnchantmentPresent,
@@ -80,7 +107,7 @@ function graphSpellDamage(
   isArtifactDuplicatorOfDuplicationsPresent,
   printDamageCalculationLogs
 ) {
-  calculateSpellDamage(
+  spellDamage = calculateSpellDamage(
     numberOfCopySpells,
     damage,
     isDuplicatorEnchantmentPresent,
@@ -89,7 +116,14 @@ function graphSpellDamage(
     printDamageCalculationLogs
   );
 
-  let formsArray = [];
+  document.getElementById("castedSpells").textContent  = numberOfCopySpells +1  ;
+  document.getElementById("copiedSpells").textContent  = numberOfCopies ;
+  document.getElementById("generatedByArtifact").textContent  = duplicatedByArtifact ;
+  document.getElementById("initialDamage").textContent  = damage ;
+  document.getElementById("totalDamage").textContent  = spellDamage ;
+  
+
+  formsArray = [];
   for (let i = 0; i < numberOfCopySpells + 1; i++) {
     let emptyArray = [];
     formsArray.push([emptyArray]);
@@ -98,10 +132,13 @@ function graphSpellDamage(
     } else {
       numeroDeHehizos = calculateSpellDuplication(i);
     }
+
     formsArray[i] = numeroDeHehizos;
   }
-  console.log(formsArray);
-  window.formsArray = formsArray;
+
+  if (printDamageCalculationLogs){
+    console.log(formsArray);
+  }
 }
 
 function calculateSpellDamage(
@@ -132,7 +169,6 @@ function calculateSpellDamage(
 
   return spellDamage;
 }
-
 
 function calculateNumberOfCopies(
   numberOfCopySpells,
@@ -240,7 +276,7 @@ function createArrayOfNodesArticaft(formsArray) {
       nodes.push({
         key: 'HC',
         color: 'orange',
-        location: new go.Point(originalXPosition + 100, originalYPosition-10),
+        location: new go.Point(originalXPosition + 100, originalYPosition - 10),
       });
     } else {
       numeroCopias = (formsArray[i] - 1) / 2;
@@ -349,7 +385,7 @@ function createArrayOfLinksArtifact(formsArray) {
             to: 'C' + (ultimoIndiceDer + 1),
           });
           ultimoIndiceIzquierda = ultimoIndiceIzquierda + 1;
-        } else if (z > numeroCopias / 2)  {
+        } else if (z > numeroCopias / 2) {
           while (doOnce2) {
             doOnce2 = false;
             ultimoIndiceIzquierda = ultimoIndice;
@@ -362,7 +398,7 @@ function createArrayOfLinksArtifact(formsArray) {
         }
         ultimoIndiceDer = ultimoIndiceDer + 1;
       }
-      ultimoIndice = ultimoIndiceIzquierda ;
+      ultimoIndice = ultimoIndiceIzquierda;
       doOnce = true;
       doOnce2 = true;
     }
@@ -385,14 +421,13 @@ function createArrayOfNodes(formsArray) {
       nodes.push({
         key: 'HC',
         color: 'orange',
-        location: new go.Point(originalXPosition + 100, originalYPosition-10),
+        location: new go.Point(originalXPosition + 100, originalYPosition - 10),
       });
     } else {
-
       let contador = 30;
       let variadorX;
       let lugarPrevio;
-      for (let z = 0; z < numeroCopias-1; z++) {
+      for (let z = 0; z < numeroCopias - 1; z++) {
         variadorX = i * 100;
 
         lugarPrevio = originalYPosition + contador;
@@ -406,7 +441,7 @@ function createArrayOfNodes(formsArray) {
           ),
         });
         contador = lugarPrevio + 30;
-      }   
+      }
       contador = 30;
       nodes.push({
         key: 'HC/HD',
@@ -422,7 +457,6 @@ function createArrayOfNodes(formsArray) {
   console.log(nodes);
   return nodes;
 }
-
 
 function createArrayOfLinks(formsArray) {
   let links = [];
@@ -449,12 +483,11 @@ function createArrayOfLinks(formsArray) {
           ultimoIndiceDer = ultimoIndiceDer + 1;
         }
 
-          links.push({
-            from: 'C',
-            to: 'C' + (ultimoIndiceDer + 1),
-          });
-          ultimoIndiceDer = ultimoIndiceDer + 1;
-
+        links.push({
+          from: 'C',
+          to: 'C' + (ultimoIndiceDer + 1),
+        });
+        ultimoIndiceDer = ultimoIndiceDer + 1;
       }
       doOnce = true;
     } else {
@@ -468,16 +501,16 @@ function createArrayOfLinks(formsArray) {
           ultimoIndiceDer = ultimoIndiceDer + 1;
           ultimoIndiceIzquierda = ultimoIndice;
         }
-        if (z < numeroCopias ) {
+        if (z < numeroCopias) {
           links.push({
             from: 'C' + (ultimoIndiceIzquierda + 1),
             to: 'C' + (ultimoIndiceDer + 1),
           });
           ultimoIndiceIzquierda = ultimoIndiceIzquierda + 1;
-        } 
+        }
         ultimoIndiceDer = ultimoIndiceDer + 1;
       }
-      ultimoIndice = ultimoIndiceIzquierda ;
+      ultimoIndice = ultimoIndiceIzquierda;
       doOnce = true;
       doOnce2 = true;
     }
