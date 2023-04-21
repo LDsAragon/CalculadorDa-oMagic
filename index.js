@@ -159,8 +159,6 @@ function calculateNumberOfCopies(
 }
 
 function calculateSpellDuplicationWithArtifact(numberOfCopySpells) {
-  //console.log('calculateSpellDuplicationWithArtifact');
-
   let exponente = numberOfCopySpells + 1;
 
   numberOfCopies = Math.pow(2, exponente) - 1;
@@ -283,8 +281,6 @@ function createArrayOfNodes(formsArray) {
 function createArrayOfLinks(formsArray) {
   let links = [];
   let ultimoIndice = 1;
-  let contadorC = 0;
-  let contadorCA = 0;
   let ultimoIndiceDer = 0;
   let ultimoIndiceIzquierda = 1;
 
@@ -325,7 +321,6 @@ function createArrayOfLinks(formsArray) {
       doOnce = true;
     } else {
       for (let z = 1; z < numeroCopias; z++) {
-        console.log('numeroCopias : ' + numeroCopias);
         while (doOnce) {
           links.push({
             from: 'HC/HD' + i,
@@ -346,7 +341,6 @@ function createArrayOfLinks(formsArray) {
             doOnce2 = false;
             ultimoIndiceIzquierda = ultimoIndice;
           }
-          console.log('ultimoIndiceIzquierda: ' + ultimoIndiceIzquierda);
           links.push({
             from: 'CA' + (ultimoIndiceIzquierda + 1),
             to: 'C' + (ultimoIndiceDer + 1),
