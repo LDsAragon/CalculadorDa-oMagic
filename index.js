@@ -8,9 +8,17 @@ let numeroDeHehizos;
 function init() {
   const $ = go.GraphObject.make; // for conciseness in defining templates
 
-  myDiagram = $(go.Diagram, 'myDiagramDiv', {
-    'undoManager.isEnabled': true,
-  });
+  try {
+    myDiagram = $(go.Diagram, 'myDiagramDiv', {
+      'undoManager.isEnabled': true,
+    });
+  } catch (error) {
+    console.log('Error :' + error);
+    console.log('Cleaning Div');
+    myDiagram.div = null;
+    console.clear();
+    init();
+  }
 
   // define the "sample" Node template
   myDiagram.nodeTemplate = $(
@@ -37,8 +45,12 @@ function init() {
     $(go.Shape, { toArrow: 'Standard' })
   );
 
-  myDiagram.layout = new go.Layout()
-  myDiagram.model = new go.GraphLinksModel( createArrayOfNodes(formsArray) );
+  myDiagram.layout = new go.Layout();
+
+  myDiagram.model = new go.GraphLinksModel(
+    createArrayOfNodes(formsArray),
+    createArrayOfLinks(formsArray)
+  );
 }
 
 function graphSpellDamage(
@@ -207,45 +219,149 @@ function createArrayOfNodes(formsArray) {
   let originalXPosition = 100;
   let originalYPosition = 0;
   let nodes = [];
-  let links = [];
 
-  
   for (let i = 0; i < formsArray.length; i++) {
     let numeroCopias = formsArray[i];
-    
-      if (numeroCopias === 1) {
-        numeroCopias = 0
-        nodes.push({ key: 'HC', color: 'orange', location: new go.Point(originalXPosition+100, originalYPosition) }) ;
-      } else {
-        numeroCopias = (formsArray[i] - 1) / 2;
-    
-        let contador = 30 ;   
-        let variadorX ; 
-        let lugarPrevio ;
+
+    if (numeroCopias === 1) {
+      numeroCopias = 0;
+      nodes.push({
+        key: 'HC',
+        color: 'orange',
+        location: new go.Point(originalXPosition + 100, originalYPosition),
+      });
+    } else {
+      numeroCopias = (formsArray[i] - 1) / 2;
+
+      let contador = 30;
+      let variadorX;
+      let lugarPrevio;
       for (let z = 0; z < numeroCopias; z++) {
+        variadorX = i * 100;
 
-        variadorX = i * 100 ;
+        lugarPrevio = originalYPosition + contador;
 
-        // console.log("variadorX: " + variadorX);
-        lugarPrevio = originalYPosition + contador
-        // console.log("lugarPrevio : " + lugarPrevio)
-
-        nodes.push({key: 'C',color: 'blue',location: new go.Point(originalXPosition + 85 + variadorX, originalYPosition + contador)  });
-        contador = lugarPrevio + 30 ; 
+        nodes.push({
+          key: 'C',
+          color: 'blue',
+          location: new go.Point(
+            originalXPosition + 85 + variadorX,
+            originalYPosition + contador
+          ),
+        });
+        contador = lugarPrevio + 30;
       }
       for (let z = 0; z < numeroCopias; z++) {
-        variadorX = i * 100 ;
-        lugarPrevio = originalYPosition + contador
-        nodes.push({ key: 'CA', color: 'green', location: new go.Point(originalXPosition +85 + variadorX, originalYPosition + contador) });
-        contador = lugarPrevio + 30 ; 
+        variadorX = i * 100;
+        lugarPrevio = originalYPosition + contador;
+        nodes.push({
+          key: 'CA',
+          color: 'green',
+          location: new go.Point(
+            originalXPosition + 85 + variadorX,
+            originalYPosition + contador
+          ),
+        });
+        contador = lugarPrevio + 30;
       }
-      contador = 30
-      nodes.push({ key: 'HC/HD', color: 'purple', location: new go.Point(originalXPosition +90 +variadorX, originalYPosition - 10)  });
+      contador = 30;
+      nodes.push({
+        key: 'HC/HD',
+        color: 'purple',
+        location: new go.Point(
+          originalXPosition + 90 + variadorX,
+          originalYPosition - 10
+        ),
+      });
     }
   }
 
-  console.log(nodes)
-  return nodes ; 
+  console.log(nodes);
+  return nodes;
 }
 
+function createArrayOfLinks(formsArray) {
+  let links = [];
+  let ultimoIndice = 1;
+  let contadorC = 0;
+  let contadorCA = 0;
+  let ultimoIndiceDer = 0;
+  let ultimoIndiceIzquierda = 1;
 
+  for (let i = 0; i < formsArray.length - 1; i++) {
+    let numeroCopias = formsArray[i];
+    let doOnce = true;
+    let doOnce2 = true;
+    if (numeroCopias === 1) {
+      links.push({ from: 'HC', to: 'HC/HD' });
+      links.push({ from: 'HC', to: 'C' });
+      links.push({ from: 'HC', to: 'CA' });
+      ultimoIndiceDer = 1;
+    } else if (numeroCopias === 3) {
+      doOnce = true;
+      for (let z = 1; z < numeroCopias; z++) {
+        while (doOnce) {
+          links.push({
+            from: 'HC/HD',
+            to: 'C' + (ultimoIndiceDer + 1),
+          });
+          doOnce = false;
+          ultimoIndiceDer = ultimoIndiceDer + 1;
+        }
+        if (z % 2 == 0) {
+          links.push({
+            from: 'CA',
+            to: 'C' + (ultimoIndiceDer + 1),
+          });
+          ultimoIndiceDer = ultimoIndiceDer + 1;
+        } else {
+          links.push({
+            from: 'C',
+            to: 'C' + (ultimoIndiceDer + 1),
+          });
+          ultimoIndiceDer = ultimoIndiceDer + 1;
+        }
+      }
+      doOnce = true;
+    } else {
+      for (let z = 1; z < numeroCopias; z++) {
+        console.log('numeroCopias : ' + numeroCopias);
+        while (doOnce) {
+          links.push({
+            from: 'HC/HD' + i,
+            to: 'C' + (ultimoIndiceDer + 1),
+          });
+          doOnce = false;
+          ultimoIndiceDer = ultimoIndiceDer + 1;
+          ultimoIndiceIzquierda = ultimoIndice;
+        }
+        if (z < numeroCopias / 2) {
+          links.push({
+            from: 'C' + (ultimoIndiceIzquierda + 1),
+            to: 'C' + (ultimoIndiceDer + 1),
+          });
+          ultimoIndiceIzquierda = ultimoIndiceIzquierda + 1;
+        } else {
+          while (doOnce2) {
+            doOnce2 = false;
+            ultimoIndiceIzquierda = ultimoIndice;
+          }
+          console.log('ultimoIndiceIzquierda: ' + ultimoIndiceIzquierda);
+          links.push({
+            from: 'CA' + (ultimoIndiceIzquierda + 1),
+            to: 'C' + (ultimoIndiceDer + 1),
+          });
+          ultimoIndiceIzquierda = ultimoIndiceIzquierda + 1;
+        }
+        ultimoIndiceDer = ultimoIndiceDer + 1;
+      }
+      ultimoIndice = (numeroCopias - 1) / 2 + 1;
+      doOnce = true;
+      doOnce2 = true;
+    }
+    //ultimoIndice = ((numeroCopias - 1) / 2) +1;
+  }
+
+  console.log(links);
+  return links;
+}
