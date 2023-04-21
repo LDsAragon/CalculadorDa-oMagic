@@ -122,6 +122,9 @@ function calculateDrawData(
   document.getElementById("initialDamage").textContent  = damage ;
   document.getElementById("totalDamage").textContent  = spellDamage ;
   
+  if (isDuplicatorEnchantmentPresent && isFirstSpellOfTurn) {
+    numberOfCopySpells = numberOfCopySpells + 1;
+  }
 
   formsArray = [];
   for (let i = 0; i < numberOfCopySpells + 1; i++) {
