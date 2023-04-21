@@ -9,6 +9,7 @@ let finalSpellsQuantityValue = 0;
 let duplicatedByArtifact = 0;
 let printCopyCalculationLogs = true;
 let numeroDeHehizos;
+let isArtifactDuplicatorPresent = false ;
 
 function draw() {
   const $ = go.GraphObject.make; // for conciseness in defining templates
@@ -17,13 +18,7 @@ function draw() {
     myDiagram = $(go.Diagram, 'myDiagramDiv', {
       'undoManager.isEnabled': true,
     });
-  } catch (error) {
-    console.log('Error :' + error);
-    console.log('Cleaning Div');
-    myDiagram.div = null;
-    console.clear();
-    draw();
-  }
+
 
   // define the "sample" Node template
   myDiagram.nodeTemplate = $(
@@ -52,10 +47,28 @@ function draw() {
 
   myDiagram.layout = new go.Layout();
 
+  let nodesArray ; 
+  let linksArray ; 
+
+  if(isArtifactDuplicatorPresent) {
+    nodesArray = createArrayOfNodesArticaft(formsArray)
+    linksArray = createArrayOfLinksArtifact(formsArray)
+  } else {
+    nodesArray = createArrayOfNodes(formsArray)
+  }
+
   myDiagram.model = new go.GraphLinksModel(
-    createArrayOfNodes(formsArray),
-    createArrayOfLinks(formsArray)
+    nodesArray,
+    linksArray
   );
+
+} catch (error) {
+  //console.log('Error :' + error);
+  console.log('Cleaning Div');
+  myDiagram.div = null;
+  //console.clear();
+  draw();
+}
 }
 
 function graphSpellDamage(
@@ -131,6 +144,7 @@ function calculateNumberOfCopies(
   numberOfCopies = 0;
   finalSpellsQuantityValue = 0;
   duplicatedByArtifact = 0;
+  isArtifactDuplicatorPresent = isArtifactDuplicatorOfDuplicationsPresent;
 
   if (isDuplicatorEnchantmentPresent && isFirstSpellOfTurn) {
     numberOfCopySpells = numberOfCopySpells + 1;
@@ -169,7 +183,6 @@ function calculateSpellDuplicationWithArtifact(numberOfCopySpells) {
 }
 
 function calculateSpellDuplication(numberOfCopySpells) {
-  //console.log('calculateSpellDuplication');
   numberOfCopies = numberOfCopySpells + 1;
   return numberOfCopies;
 }
@@ -213,7 +226,7 @@ function printDamageDetails(
   console.log('Daño Inicial ' + damage + ' Daño Final ' + spellDamage);
 }
 
-function createArrayOfNodes(formsArray) {
+function createArrayOfNodesArticaft(formsArray) {
   let originalXPosition = 100;
   let originalYPosition = 0;
   let nodes = [];
@@ -278,7 +291,7 @@ function createArrayOfNodes(formsArray) {
   return nodes;
 }
 
-function createArrayOfLinks(formsArray) {
+function createArrayOfLinksArtifact(formsArray) {
   let links = [];
   let ultimoIndice = 1;
   let ultimoIndiceDer = 0;
@@ -357,4 +370,55 @@ function createArrayOfLinks(formsArray) {
 
   console.log(links);
   return links;
+}
+
+function createArrayOfNodes(formsArray) {
+  let originalXPosition = 100;
+  let originalYPosition = 0;
+  let nodes = [];
+
+  for (let i = 0; i < formsArray.length; i++) {
+    let numeroCopias = formsArray[i];
+
+    if (numeroCopias === 1) {
+      numeroCopias = 0;
+      nodes.push({
+        key: 'HC',
+        color: 'orange',
+        location: new go.Point(originalXPosition + 100, originalYPosition),
+      });
+    } else {
+
+      let contador = 30;
+      let variadorX;
+      let lugarPrevio;
+      for (let z = 0; z < numeroCopias-1; z++) {
+        variadorX = i * 100;
+
+        lugarPrevio = originalYPosition + contador;
+
+        nodes.push({
+          key: 'C',
+          color: 'blue',
+          location: new go.Point(
+            originalXPosition + 85 + variadorX,
+            originalYPosition + contador
+          ),
+        });
+        contador = lugarPrevio + 30;
+      }   
+      contador = 30;
+      nodes.push({
+        key: 'HC/HD',
+        color: 'purple',
+        location: new go.Point(
+          originalXPosition + 90 + variadorX,
+          originalYPosition - 10
+        ),
+      });
+    }
+  }
+
+  console.log(nodes);
+  return nodes;
 }
