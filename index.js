@@ -55,6 +55,7 @@ function draw() {
     linksArray = createArrayOfLinksArtifact(formsArray)
   } else {
     nodesArray = createArrayOfNodes(formsArray)
+    linksArray = createArrayOfLinks(formsArray)
   }
 
   myDiagram.model = new go.GraphLinksModel(
@@ -239,7 +240,7 @@ function createArrayOfNodesArticaft(formsArray) {
       nodes.push({
         key: 'HC',
         color: 'orange',
-        location: new go.Point(originalXPosition + 100, originalYPosition),
+        location: new go.Point(originalXPosition + 100, originalYPosition-10),
       });
     } else {
       numeroCopias = (formsArray[i] - 1) / 2;
@@ -280,7 +281,7 @@ function createArrayOfNodesArticaft(formsArray) {
         key: 'HC/HD',
         color: 'purple',
         location: new go.Point(
-          originalXPosition + 90 + variadorX,
+          originalXPosition + 80 + variadorX,
           originalYPosition - 10
         ),
       });
@@ -302,7 +303,6 @@ function createArrayOfLinksArtifact(formsArray) {
     let doOnce = true;
     let doOnce2 = true;
     if (numeroCopias === 1) {
-      links.push({ from: 'HC', to: 'HC/HD' });
       links.push({ from: 'HC', to: 'C' });
       links.push({ from: 'HC', to: 'CA' });
       ultimoIndiceDer = 1;
@@ -385,7 +385,7 @@ function createArrayOfNodes(formsArray) {
       nodes.push({
         key: 'HC',
         color: 'orange',
-        location: new go.Point(originalXPosition + 100, originalYPosition),
+        location: new go.Point(originalXPosition + 100, originalYPosition-10),
       });
     } else {
 
@@ -412,7 +412,7 @@ function createArrayOfNodes(formsArray) {
         key: 'HC/HD',
         color: 'purple',
         location: new go.Point(
-          originalXPosition + 90 + variadorX,
+          originalXPosition + 80 + variadorX,
           originalYPosition - 10
         ),
       });
@@ -421,4 +421,68 @@ function createArrayOfNodes(formsArray) {
 
   console.log(nodes);
   return nodes;
+}
+
+
+function createArrayOfLinks(formsArray) {
+  let links = [];
+  let ultimoIndice = 1;
+  let ultimoIndiceDer = 0;
+  let ultimoIndiceIzquierda = 1;
+
+  for (let i = 0; i < formsArray.length - 1; i++) {
+    let numeroCopias = formsArray[i];
+    let doOnce = true;
+    let doOnce2 = true;
+    if (numeroCopias === 1) {
+      links.push({ from: 'HC', to: 'C' });
+      ultimoIndiceDer = 1;
+    } else if (numeroCopias === 2) {
+      doOnce = true;
+      for (let z = 1; z < numeroCopias; z++) {
+        while (doOnce) {
+          links.push({
+            from: 'HC/HD',
+            to: 'C' + (ultimoIndiceDer + 1),
+          });
+          doOnce = false;
+          ultimoIndiceDer = ultimoIndiceDer + 1;
+        }
+
+          links.push({
+            from: 'C',
+            to: 'C' + (ultimoIndiceDer + 1),
+          });
+          ultimoIndiceDer = ultimoIndiceDer + 1;
+
+      }
+      doOnce = true;
+    } else {
+      for (let z = 1; z < numeroCopias; z++) {
+        while (doOnce) {
+          links.push({
+            from: 'HC/HD' + i,
+            to: 'C' + (ultimoIndiceDer + 1),
+          });
+          doOnce = false;
+          ultimoIndiceDer = ultimoIndiceDer + 1;
+          ultimoIndiceIzquierda = ultimoIndice;
+        }
+        if (z < numeroCopias ) {
+          links.push({
+            from: 'C' + (ultimoIndiceIzquierda + 1),
+            to: 'C' + (ultimoIndiceDer + 1),
+          });
+          ultimoIndiceIzquierda = ultimoIndiceIzquierda + 1;
+        } 
+        ultimoIndiceDer = ultimoIndiceDer + 1;
+      }
+      ultimoIndice = ultimoIndiceIzquierda ;
+      doOnce = true;
+      doOnce2 = true;
+    }
+  }
+
+  console.log(links);
+  return links;
 }
