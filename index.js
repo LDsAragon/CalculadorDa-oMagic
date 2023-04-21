@@ -1,3 +1,8 @@
+const CANTIDAD_CICLOS = 'Cantidad de Ciclos ';
+const CANTIDAD_COPIAS_ARTEFACTO =
+  'Cantidad de copias generadas por el Artefacto en el ultimo ciclo ';
+const CANTIDAD_TOTAL_HECHIZOS = 'Cantidad total de Hechizos ';
+const CANTIDAD_DE_COPIAS = 'Cantidad de Copias ';
 let spellDamage = 0;
 let numberOfCopies = 0;
 let finalSpellsQuantityValue = 0;
@@ -5,7 +10,7 @@ let duplicatedByArtifact = 0;
 let printCopyCalculationLogs = true;
 let numeroDeHehizos;
 
-function init() {
+function draw() {
   const $ = go.GraphObject.make; // for conciseness in defining templates
 
   try {
@@ -17,7 +22,7 @@ function init() {
     console.log('Cleaning Div');
     myDiagram.div = null;
     console.clear();
-    init();
+    draw();
   }
 
   // define the "sample" Node template
@@ -114,11 +119,6 @@ function calculateSpellDamage(
   return spellDamage;
 }
 
-const CANTIDAD_CICLOS = 'Cantidad de Ciclos ';
-const CANTIDAD_COPIAS_ARTEFACTO =
-  'Cantidad de copias generadas por el Artefacto en el ultimo ciclo ';
-const CANTIDAD_TOTAL_HECHIZOS = 'Cantidad total de Hechizos ';
-const CANTIDAD_DE_COPIAS = 'Cantidad de Copias ';
 
 function calculateNumberOfCopies(
   numberOfCopySpells,
@@ -341,7 +341,7 @@ function createArrayOfLinks(formsArray) {
             to: 'C' + (ultimoIndiceDer + 1),
           });
           ultimoIndiceIzquierda = ultimoIndiceIzquierda + 1;
-        } else {
+        } else if (z > numeroCopias / 2)  {
           while (doOnce2) {
             doOnce2 = false;
             ultimoIndiceIzquierda = ultimoIndice;
@@ -355,11 +355,10 @@ function createArrayOfLinks(formsArray) {
         }
         ultimoIndiceDer = ultimoIndiceDer + 1;
       }
-      ultimoIndice = (numeroCopias - 1) / 2 + 1;
+      ultimoIndice = ultimoIndiceIzquierda ;
       doOnce = true;
       doOnce2 = true;
     }
-    //ultimoIndice = ((numeroCopias - 1) / 2) +1;
   }
 
   console.log(links);
