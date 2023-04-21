@@ -221,18 +221,22 @@ function createArrayOfNodes(formsArray) {
     
         let contador = 30 ;   
         let variadorX ; 
-        let lugarPrevio = 30
+        let lugarPrevio ;
       for (let z = 0; z < numeroCopias; z++) {
 
         variadorX = i * 100 ;
-        variadorY = i * 30 ;        
 
         // console.log("variadorX: " + variadorX);
         lugarPrevio = originalYPosition + contador
         // console.log("lugarPrevio : " + lugarPrevio)
 
         nodes.push({key: 'C',color: 'blue',location: new go.Point(originalXPosition + 85 + variadorX, originalYPosition + contador)  });
-        nodes.push({ key: 'CA', color: 'green', location: new go.Point(originalXPosition +125 + variadorX, originalYPosition + contador) });
+        contador = lugarPrevio + 30 ; 
+      }
+      for (let z = 0; z < numeroCopias; z++) {
+        variadorX = i * 100 ;
+        lugarPrevio = originalYPosition + contador
+        nodes.push({ key: 'CA', color: 'green', location: new go.Point(originalXPosition +85 + variadorX, originalYPosition + contador) });
         contador = lugarPrevio + 30 ; 
       }
       contador = 30
@@ -243,3 +247,5 @@ function createArrayOfNodes(formsArray) {
   console.log(nodes)
   return nodes ; 
 }
+
+
