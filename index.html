@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html>
   <script text="JavaScript" src="index.js"></script>
-  <script text="JavaScript" src="libs/jquery.min.js"></script>
-    <link rel="stylesheet" href="libs/bootstrap.min.css" />
+  <script text="JavaScript" src="libs/go.js"></script>
+  <!-- <script text="JavaScript" src="libs/jquery.min.js"></script> -->
+  <!-- <link rel="stylesheet" href="libs/bootstrap.min.css" /> -->
 
   <body>
-    <input name="numeroClonados" />
-    <input name="numberOFSpells" />
-    <button type="button" name="artifactPresent">artifactPresent</button>
+    <input id="spellsLanzados" type="number" />
+    <input id="numberOFSpells" type="number" />
+    <button type="button" name="artifactPresent" onclick="init()">Dibujar Diagrama</button>
+    
+  
+    <div id="myDiagramDiv" style="border: 1px solid black; width: 800px; height: 400px; position: relative;"><canvas tabindex="0" style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 298px; height: 198px;" width="298" height="198">This text is displayed if your browser does not support the Canvas HTML element.</canvas><div style="position: absolute; overflow: auto; width: 298px; height: 198px; z-index: 1;"><div style="position: absolute; width: 1px; height: 1px;"></div></div></div>
+  <br>
+  
 
-
+  
 
   </body>
 </html>
