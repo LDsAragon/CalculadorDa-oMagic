@@ -79,7 +79,7 @@ function draw() {
       //nodesArray = createArrayOfNodesArticaftStorm(formsArray); //TODO
     }
     else if (isArtifactDuplicatorPresent) {
-      nodesArray = createArrayOfNodesArtifact(formsArray);
+      nodesArray = createArrayOfNodesArticaft(formsArray);
       linksArray = createArrayOfLinksArtifact(formsArray);
     } else if (isStormDuplicatorPresent){
       //nodesArray = createArrayOfNodesStorm(formsArray); //TODO
@@ -92,11 +92,11 @@ function draw() {
 
     myDiagram.model = new go.GraphLinksModel(nodesArray, linksArray);
   } catch (error) {
-    console.log('Error :' + error);
+    //console.log('Error :' + error);
     console.log('Cleaning Div');
     myDiagram.div = null;
     //console.clear();
-    draw();
+    //draw();
   }
 }
 
@@ -197,7 +197,6 @@ function calculateNumberOfCopies(
   }
 
   formsArray = [];
-  linksArray = [];
   stormArray = [];
   stormArtifact = [];
   for (let i = 0; i < numberOfCopySpells + 1; i++) {
@@ -318,7 +317,7 @@ function printDamageDetails(
   console.log('Daño Inicial ' + damage + ' Daño Final ' + spellDamage);
 }
 
-function createArrayOfNodesArtifact(formsArray) {
+function createArrayOfNodesArticaft(formsArray) {
   let originalXPosition = 100;
   let originalYPosition = 0;
   let nodes = [];
