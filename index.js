@@ -35,6 +35,9 @@ function draw() {
   const $ = go.GraphObject.make; // for conciseness in defining templates
 
   try {
+
+    deleteDiagram();
+
     myDiagram = $(go.Diagram, 'myDiagramDiv', {
       'undoManager.isEnabled': true,
     });
@@ -138,7 +141,7 @@ function calculateDrawData(
   document.getElementById('initialDamage').textContent = damage;
   document.getElementById('totalDamage').textContent = spellDamage;
 
-  
+  /*
   formsArray = [];
   for (let i = 0; i < numberOfCopySpells + 1; i++) {
     let emptyArray = [];
@@ -150,9 +153,9 @@ function calculateDrawData(
     } else {
       numeroDeHehizos = calculateSpellDuplication(i);
     }
-
     formsArray[i] = numeroDeHehizos;
   }
+  */
   
 
   if (printDamageCalculationLogs) {
@@ -233,6 +236,8 @@ function calculateNumberOfCopies(
       stormArtifact[i] = object.duplicatedByArtifactForStorm;
     } else if (isArtifactDuplicatorOfDuplicationsPresent) {
       formsArray[i] = calculateSpellDuplicationWithArtifact(i);
+    } else if (isStormEnchantmentPresent) {
+      formsArray[i] = calculateSpellDuplicationStorm(i);
     } else {
       formsArray[i] = calculateSpellDuplication(i);
     }
@@ -297,6 +302,24 @@ function calculateSpellDuplication(numberOfCopySpells) {
   return numberOfCopies;
 }
 
+function calculateSpellDuplicationStorm(currentSpellCasted) {
+  
+  let castedSpell = 1;
+  currentSpellCasted = currentSpellCasted +1  ;
+
+ if (currentSpellCasted === 1) {
+    duplicatedByStorm = currentSpellCasted - 1;
+    duplicatedByArtifact = numberOfCopies
+    numberOfCopies = numberOfCopies + castedSpell + duplicatedByStorm;
+  } else {
+    duplicatedByStorm = currentSpellCasted - 1;
+    duplicatedByArtifact = numberOfCopies
+    numberOfCopies = numberOfCopies + castedSpell + duplicatedByStorm;
+  }
+  
+  return numberOfCopies;
+}
+
 function printSpellDetails(
   numberOfCopySpells,
   isArtifactDuplicatorOfDuplicationsPresent
@@ -335,11 +358,13 @@ function printDamageDetails(
   console.log(
     CANTIDAD_DE_COPIAS + ' creadas por tormenta ' + duplicatedByStorm
   );
-  console.log(
-    CANTIDAD_DE_COPIAS +
-      ' creadas por el artefacto tras tormenta ' +
-      duplicatedByArtifactForStorm
-  );
+  if (isArtifactDuplicatorOfDuplicationsPresent && isStormDuplicatorPresent) {
+    console.log(
+      CANTIDAD_DE_COPIAS +
+        ' creadas por el artefacto tras tormenta ' +
+        duplicatedByArtifactForStorm
+    );
+  }
   console.log(CANTIDAD_TOTAL_HECHIZOS + finalSpellsQuantityValue);
   console.log('Daño Inicial ' + damage + ' Daño Final ' + spellDamage);
 }
