@@ -74,18 +74,20 @@ function draw() {
     let nodesArray;
     let linksArray;
 
-    if (isArtifactDuplicatorPresent = isStormDuplicatorPresent) {
+    if (isArtifactDuplicatorPresent && isStormDuplicatorPresent) {
       //linksArray = createArrayOfLinksArtifactStorm(formsArray); //TODO
       //nodesArray = createArrayOfNodesArticaftStorm(formsArray); //TODO
-    }
-    else if (isArtifactDuplicatorPresent) {
       nodesArray = createArrayOfNodesArtifact(formsArray);
       linksArray = createArrayOfLinksArtifact(formsArray);
-    } else if (isStormDuplicatorPresent){
+    } else if (isArtifactDuplicatorPresent) {
+      nodesArray = createArrayOfNodesArtifact(formsArray);
+      linksArray = createArrayOfLinksArtifact(formsArray);
+    } else if (isStormDuplicatorPresent) {
       //nodesArray = createArrayOfNodesStorm(formsArray); //TODO
       //linksArray = createArrayOfLinksStorm(formsArray); //TODO
-    } else
-    {
+      nodesArray = createArrayOfNodes(formsArray);
+      linksArray = createArrayOfLinks(formsArray);
+    } else {
       nodesArray = createArrayOfNodes(formsArray);
       linksArray = createArrayOfLinks(formsArray);
     }
@@ -136,12 +138,31 @@ function calculateDrawData(
   document.getElementById('initialDamage').textContent = damage;
   document.getElementById('totalDamage').textContent = spellDamage;
 
+  
+  formsArray = [];
+  for (let i = 0; i < numberOfCopySpells + 1; i++) {
+    let emptyArray = [];
+    formsArray.push([emptyArray]);
+    if(isArtifactDuplicatorOfDuplicationsPresent && isStormEnchantmentPresent) {
+      numeroDeHehizos = calculateSpellDuplicationWithArtifactAcountingForStorm(i).numberOfCopies;
+    } else if (isArtifactDuplicatorOfDuplicationsPresent) {
+      numeroDeHehizos = calculateSpellDuplicationWithArtifact(i);
+    } else {
+      numeroDeHehizos = calculateSpellDuplication(i);
+    }
+
+    formsArray[i] = numeroDeHehizos;
+  }
+  
+
   if (printDamageCalculationLogs) {
-    console.log("Array de los hechizos jugados+copiados");
+    console.log('Array de los hechizos jugados+copiados');
     console.log(formsArray);
-    console.log("Array de los copiados por tormenta");
+    console.log('Array de los copiados por tormenta');
     console.log(stormArray);
-    console.log("Array de los duplicados por artefacto de la copia de tormenta");
+    console.log(
+      'Array de los duplicados por artefacto de la copia de tormenta'
+    );
     console.log(stormArtifact);
   }
 }
@@ -189,6 +210,7 @@ function calculateNumberOfCopies(
   numberOfCopies = 0;
   finalSpellsQuantityValue = 0;
   duplicatedByArtifact = 0;
+  isStormDuplicatorPresent = isStormEnchantmentPresent;
   isArtifactDuplicatorPresent = isArtifactDuplicatorOfDuplicationsPresent;
   isStormDuplicatorPresent = isStormEnchantmentPresent;
 
@@ -201,13 +223,11 @@ function calculateNumberOfCopies(
   stormArray = [];
   stormArtifact = [];
   for (let i = 0; i < numberOfCopySpells + 1; i++) {
-    let emptyArray = [];
-
     if (
       isArtifactDuplicatorOfDuplicationsPresent &&
       isStormEnchantmentPresent
     ) {
-      var object = calculateSpellDuplicationWithArtifactAcountingForStorm(i)
+      var object = calculateSpellDuplicationWithArtifactAcountingForStorm(i);
       formsArray[i] = object.numberOfCopies;
       stormArray[i] = object.duplicatedByStorm;
       stormArtifact[i] = object.duplicatedByArtifactForStorm;
@@ -240,7 +260,7 @@ function calculateSpellDuplicationWithArtifactAcountingForStorm(
 
   let stormDuplication = currentSpellCasted - 1;
   if (currentSpellCasted === 0) {
-    numberOfCopies = 1
+    numberOfCopies = 1;
   } else if (currentSpellCasted === 1) {
     duplicatedByArtifact = currentSpellCasted;
     numberOfCopies =
@@ -252,7 +272,6 @@ function calculateSpellDuplicationWithArtifactAcountingForStorm(
     duplicatedByArtifact = numberOfCopies;
     duplicatedByStorm = stormDuplication;
     duplicatedByArtifactForStorm = stormDuplication;
-    stormArray;
     numberOfCopies = numberOfCopies * 2 + castedSpell + stormDuplication * 2;
   }
 
@@ -309,11 +328,18 @@ function printDamageDetails(
   );
   console.log(CANTIDAD_CICLOS + numberOfCopySpells);
 
+  console.log(CANTIDAD_DE_COPIAS + duplicatedByArtifact);
   if (isArtifactDuplicatorOfDuplicationsPresent) {
     console.log(CANTIDAD_COPIAS_ARTEFACTO + duplicatedByArtifact);
   }
-  console.log(CANTIDAD_DE_COPIAS + " creadas por tormenta "+ duplicatedByStorm);
-  console.log(CANTIDAD_DE_COPIAS + " creadas por el artefacto tras tormenta "+ duplicatedByArtifactForStorm);
+  console.log(
+    CANTIDAD_DE_COPIAS + ' creadas por tormenta ' + duplicatedByStorm
+  );
+  console.log(
+    CANTIDAD_DE_COPIAS +
+      ' creadas por el artefacto tras tormenta ' +
+      duplicatedByArtifactForStorm
+  );
   console.log(CANTIDAD_TOTAL_HECHIZOS + finalSpellsQuantityValue);
   console.log('Daño Inicial ' + damage + ' Daño Final ' + spellDamage);
 }
