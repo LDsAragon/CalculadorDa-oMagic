@@ -141,23 +141,6 @@ function calculateDrawData(
   document.getElementById('initialDamage').textContent = damage;
   document.getElementById('totalDamage').textContent = spellDamage;
 
-  /*
-  formsArray = [];
-  for (let i = 0; i < numberOfCopySpells + 1; i++) {
-    let emptyArray = [];
-    formsArray.push([emptyArray]);
-    if(isArtifactDuplicatorOfDuplicationsPresent && isStormEnchantmentPresent) {
-      numeroDeHehizos = calculateSpellDuplicationWithArtifactAcountingForStorm(i).numberOfCopies;
-    } else if (isArtifactDuplicatorOfDuplicationsPresent) {
-      numeroDeHehizos = calculateSpellDuplicationWithArtifact(i);
-    } else {
-      numeroDeHehizos = calculateSpellDuplication(i);
-    }
-    formsArray[i] = numeroDeHehizos;
-  }
-  */
-  
-
   if (printDamageCalculationLogs) {
     console.log('Array de los hechizos jugados+copiados');
     console.log(formsArray);
@@ -217,7 +200,7 @@ function calculateNumberOfCopies(
   isArtifactDuplicatorPresent = isArtifactDuplicatorOfDuplicationsPresent;
   isStormDuplicatorPresent = isStormEnchantmentPresent;
 
-  if (isDuplicatorEnchantmentPresent && isFirstSpellOfTurn) {
+  if (isDuplicatorEnchantmentPresent && isFirstSpellOfTurn && isStormDuplicatorPresent === false) {
     numberOfCopySpells = numberOfCopySpells + 1;
   }
 
