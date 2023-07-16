@@ -85,13 +85,11 @@ function draw() {
       nodesArray = createArrayOfNodesArtifact(formsArray);
       linksArray = createArrayOfLinksArtifact(formsArray);
     } else if (isStormDuplicatorPresent) {
-      //nodesArray = createArrayOfNodesStorm(formsArray); //TODO
+      nodesArray = createArrayOfNodesStorm(formsArray); 
       //linksArray = createArrayOfLinksStorm(formsArray); //TODO
+          } else {
       nodesArray = createArrayOfNodes(formsArray);
       linksArray = createArrayOfLinks(formsArray);
-    } else {
-      nodesArray = createArrayOfNodes(formsArray);
-      //linksArray = createArrayOfLinks(formsArray);
     }
 
     myDiagram.model = new go.GraphLinksModel(nodesArray, linksArray);
@@ -167,7 +165,6 @@ function calculateSpellDamage(
     isFirstSpellOfTurn,
     isArtifactDuplicatorOfDuplicationsPresent,
     isStormEnchantmentPresent,
-    false
   );
 
   spellDamage = finalSpellsQuantityValue * damage;
@@ -189,7 +186,6 @@ function calculateNumberOfCopies(
   isFirstSpellOfTurn,
   isArtifactDuplicatorOfDuplicationsPresent,
   isStormEnchantmentPresent,
-  printCopyCalculationLogs
 ) {
   spellDamage = 0;
   numberOfCopies = 0;
@@ -230,12 +226,6 @@ function calculateNumberOfCopies(
     finalSpellsQuantityValue = 1;
   }
 
-  if (printCopyCalculationLogs) {
-    printSpellDetails(
-      numberOfCopySpells,
-      isArtifactDuplicatorOfDuplicationsPresent
-    );
-  }
 
   return finalSpellsQuantityValue;
 }
@@ -766,4 +756,66 @@ function createArrayOfLinks(formsArray) {
 
   console.log(links);
   return links;
+}
+
+function createArrayOfNodesStorm(formsArray) {
+  let originalXPosition = 100;
+  let originalYPosition = 0;
+  let nodes = [];
+
+  for (let i = 0; i < formsArray.length; i++) {
+    let numeroCopias = formsArray[i];
+
+    if (numeroCopias === 1) {
+      numeroCopias = 0;
+      nodes.push({
+        key: 'HC',
+        color: 'orange',
+        location: new go.Point(originalXPosition + 100, originalYPosition - 10),
+      });
+    } else {
+      let contador = 30;
+      let variadorX;
+      let lugarPrevio;
+      for (let z = 0; z < numeroCopias - 1; z++) {
+        variadorX = i * 100;
+
+        lugarPrevio = originalYPosition + contador;
+
+        if (z>=(numeroCopias-(i+1))) {
+          nodes.push({
+            key: 'T',
+            color: 'red',
+            location: new go.Point(
+              originalXPosition + 85 + variadorX,
+              originalYPosition + contador
+            ),
+          });
+        } else {
+          nodes.push({
+            key: 'C',
+            color: 'blue',
+            location: new go.Point(
+              originalXPosition + 85 + variadorX,
+              originalYPosition + contador
+            ),
+          });
+        }
+
+        contador = lugarPrevio + 30;
+      }
+      contador = 30;
+      nodes.push({
+        key: 'HC/HD',
+        color: 'purple',
+        location: new go.Point(
+          originalXPosition + 80 + variadorX,
+          originalYPosition - 10
+        ),
+      });
+    }
+  }
+
+  console.log(nodes);
+  return nodes;
 }
