@@ -1,91 +1,68 @@
 <!DOCTYPE html>
 <html>
-  <script text="JavaScript" src="index.js"></script>
-  <script text="JavaScript" src="libs/go.js"></script>
-  <script text="JavaScript" src="libs/jquery.min.js"></script>
-  <link rel="stylesheet" href="libs/bootstrap.min.css" />
-
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="index.js"></script>
+    <script src="libs/go.js"></script>
+    <script src="libs/jquery.min.js"></script>
+    <link rel="stylesheet" href="libs/bootstrap.min.css" />
+    <style>
+      /* Custom styles for larger checkboxes */
+      .custom-checkbox .custom-control-label::before,
+      .custom-checkbox .custom-control-label::after {
+        top: 0.1rem;
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+    </style>
+  </head>
   <body>
     <div class="container">
       <br />
-      <div>
-        <label>Spells Copiadores Lanzados de la mano</label>
-        <input id="numberOFSpells" type="number" min="0" />
-        <br />
-        <br />
+      <div class="form-group">
+        <label for="numberOFSpells">Spells Copiadores Lanzados de la mano</label>
+        <input id="numberOFSpells" class="form-control" type="number" min="0" />
       </div>
-
-      <div>
-        <label>Daño del ultimo hechizo lanzado</label>
-        <input id="damage" type="number" min="0" />
-        <br />
-        <br />
+      <div class="form-group">
+        <label for="damage">Daño del último hechizo lanzado</label>
+        <input id="damage" class="form-control" type="number" min="0" />
       </div>
-
-      <div>
-        <label>¿Esta el encantamiento duplicador?</label>
-        <input id="duplicatorEnchantment" type="checkbox" />
-        <br />
-        <br />
+      <div class="custom-checkbox">
+        <input id="duplicatorEnchantment" class="custom-control-input" type="checkbox" />
+        <label class="custom-control-label" for="duplicatorEnchantment">¿Esta el encantamiento duplicador?</label>
       </div>
-
-      <div>
-        <label>¿Es el primer turno?</label>
-        <input id="firstTurn" type="checkbox" />
-        <br />
-        <br />
+      <div class="custom-checkbox">
+        <input id="firstTurn" class="custom-control-input" type="checkbox" />
+        <label class="custom-control-label" for="firstTurn">¿Es el primer turno?</label>
       </div>
-
-      <div>
-        <label>¿Esta el artefacto duplicador?</label>
-        <input id="duplicatorArtifact" type="checkbox" />
-        <br />
-        <br />
+      <div class="custom-checkbox">
+        <input id="duplicatorArtifact" class="custom-control-input" type="checkbox" />
+        <label class="custom-control-label" for="duplicatorArtifact">¿Esta el artefacto duplicador?</label>
       </div>
-
-      <div> 
-      <label>¿Esta el encantamiento de Tormenta?</label>
-      <input id="tormentEnchantment" type="checkbox" />
-          <br>
-              <br>
-    </div>
-
-      <div>
-        <label>¿Escribir log del proceso?</label>
-        <input id="writeLogs" type="checkbox" />
-        <br />
-        <br />
+      <div class="custom-checkbox">
+        <input id="tormentEnchantment" class="custom-control-input" type="checkbox" />
+        <label class="custom-control-label" for="tormentEnchantment">¿Esta el encantamiento de Tormenta?</label>
       </div>
-
-      <button
-        type="button"
-        name="artifactPresent"
-        onclick="calculateDamageToGraph()"
-      >
-        Calcular Daño
-      </button>
-      <button type="button" name="artifactPresent" onclick="draw()">
-        Dibujar Diagrama
-      </button>
-      <button type="button" name="artifactPresent" onclick="deleteDiagram()">
-        Borrar Diagrama
-      </button>
-      <br />
+      <div class="custom-checkbox">
+        <input id="writeLogs" class="custom-control-input" type="checkbox" />
+        <label class="custom-control-label" for="writeLogs">¿Escribir log del proceso?</label>
+      </div>
+      <button type="button" class="btn btn-primary" onclick="calculateDamageToGraph()">Calcular Daño</button>
+      <button type="button" class="btn btn-primary" onclick="draw()">Dibujar Diagrama</button>
+      <button type="button" class="btn btn-primary" onclick="deleteDiagram()">Borrar Diagrama</button>
       <br />
       <br />
     </div>
+
 
     <div class="container">
-      <div
-        class="myDiagramDiv"
-        id="myDiagramDiv"
-        style="
-          border: 1px solid black;
-          width: 1100px;
-          height: 380px;
-          position: relative;
-        "
-      >
+      <div id="myDiagramDiv" class="myDiagramDiv"  style="
+      border: 1px solid black;
+      width: 1100px;
+      height: 380px;
+      position: relative;
+    ">
+       
         <canvas
           tabindex="0"
           style="
@@ -112,19 +89,20 @@
             z-index: 1;
           "
         >
-          <div style="position: absolute; width: 1px; height: 1px"></div>
-        </div>
+
+      </div>
+
       </div>
     </div>
 
-    <div class="container" >
+    <div class="container">
       <br>
       <br>
-      <h4> Total casted Spells : <span id="castedSpells"> 0 </span> </h4>
-      <h4> Total Copied Spells : <span id="copiedSpells"> 0 </span> </h4>
-      <h4> Copied generated by artifact : <span id="generatedByArtifact"> 0 </span> </h4>
-      <h4> Initial Damage : <span id="initialDamage"> 0 </span> </h4>
-      <h1> Total Spell Damage : <span id="totalDamage"> 0 </span> </h1>
+      <h4>Total casted Spells: <span id="castedSpells">0</span></h4>
+      <h4>Total Copied Spells: <span id="copiedSpells">0</span></h4>
+      <h4>Copied generated by artifact: <span id="generatedByArtifact">0</span></h4>
+      <h4>Initial Damage: <span id="initialDamage">0</span></h4>
+      <h1>Total Spell Damage: <span id="totalDamage">0</span></h1>
     </div>
 
   </body>
