@@ -1,3 +1,4 @@
+const VACIO = '';
 const CANTIDAD_CICLOS = 'Cantidad de Ciclos ';
 const CANTIDAD_COPIAS_ARTEFACTO =
   'Cantidad de copias generadas por el Artefacto en el ultimo ciclo ';
@@ -78,10 +79,8 @@ function draw() {
     let linksArray;
 
     if (isArtifactDuplicatorPresent && isStormDuplicatorPresent) {
-      //linksArray = createArrayOfLinksArtifactStorm(formsArray); //TODO
-      //nodesArray = createArrayOfNodesArticaftStorm(formsArray); //TODO
-      nodesArray = createArrayOfNodesArtifact(formsArray);
-      linksArray = createArrayOfLinksArtifact(formsArray);
+      nodesArray = createArrayOfNodesArtifactStorm(formsArray); 
+      //linksArray = createArrayOfLinksArtifactStorm(formsArray); 
     } else if (isArtifactDuplicatorPresent) {
       nodesArray = createArrayOfNodesArtifact(formsArray);
       linksArray = createArrayOfLinksArtifact(formsArray);
@@ -92,7 +91,7 @@ function draw() {
       linksArray = createArrayOfLinks(formsArray);
     } else {
       nodesArray = createArrayOfNodes(formsArray);
-      linksArray = createArrayOfLinks(formsArray);
+      //linksArray = createArrayOfLinks(formsArray);
     }
 
     myDiagram.model = new go.GraphLinksModel(nodesArray, linksArray);
@@ -246,16 +245,19 @@ function calculateSpellDuplicationWithArtifactAcountingForStorm(
 ) {
   let castedSpell = 1;
 
-  let stormDuplication = currentSpellCasted - 1;
+  let stormDuplication = currentSpellCasted ;
   if (currentSpellCasted === 0) {
     numberOfCopies = 1;
   } else if (currentSpellCasted === 1) {
     duplicatedByArtifact = currentSpellCasted;
+    stormDuplication = currentSpellCasted ;
     numberOfCopies =
       currentSpellCasted +
       duplicatedByArtifact +
       castedSpell +
       stormDuplication * 2;
+      duplicatedByStorm = stormDuplication;
+      duplicatedByArtifactForStorm = stormDuplication;
   } else if (currentSpellCasted >= 2) {
     duplicatedByArtifact = numberOfCopies;
     duplicatedByStorm = stormDuplication;
@@ -303,53 +305,183 @@ function calculateSpellDuplicationStorm(currentSpellCasted) {
   return numberOfCopies;
 }
 
-function printSpellDetails(
-  numberOfCopySpells,
-  isArtifactDuplicatorOfDuplicationsPresent
-) {
-  console.log(
-    'Hechizos Lanzados de la mano ' +
-      (numberOfCopySpells + 1) +
-      (' (Copiadores ' + numberOfCopySpells + ' Otro ' + 1 + ')')
-  );
-  console.log(CANTIDAD_CICLOS + numberOfCopySpells);
+
+
+function printSpellDetails(numberOfCopySpells, isArtifactDuplicatorOfDuplicationsPresent) {
+  const logContainer = document.getElementById('logContainer');
+  logContainer.innerHTML = VACIO ; 
+  logContainer.innerHTML += 'Hechizos Lanzados de la mano ' + (numberOfCopySpells + 1) + (' (Copiadores ' + numberOfCopySpells + ' Lanzado ' + 1 + ')') + '<br>';
+  logContainer.innerHTML += CANTIDAD_CICLOS + numberOfCopySpells + '<br>';
 
   if (isArtifactDuplicatorOfDuplicationsPresent) {
-    console.log(CANTIDAD_COPIAS_ARTEFACTO + duplicatedByArtifact);
+    logContainer.innerHTML += CANTIDAD_COPIAS_ARTEFACTO + duplicatedByArtifact + '<br>';
   }
 
-  console.log(CANTIDAD_DE_COPIAS + numberOfCopies);
-  console.log(CANTIDAD_TOTAL_HECHIZOS + finalSpellsQuantityValue);
+  logContainer.innerHTML += CANTIDAD_DE_COPIAS + numberOfCopies + '<br>';
+  logContainer.innerHTML += CANTIDAD_TOTAL_HECHIZOS + finalSpellsQuantityValue + '<br>';
 }
 
-function printDamageDetails(
-  damage,
-  numberOfCopySpells,
-  isArtifactDuplicatorOfDuplicationsPresent
-) {
-  console.log(
-    'Hechizos Lanzados de la mano ' +
-      (numberOfCopySpells + 1) +
-      (' (Copiadores ' + numberOfCopySpells + ' Otro ' + 1 + ')')
-  );
-  console.log(CANTIDAD_CICLOS + numberOfCopySpells);
+function printDamageDetails(damage, numberOfCopySpells, isArtifactDuplicatorOfDuplicationsPresent) {
+  const logContainer = document.getElementById('logContainer');
+  logContainer.innerHTML = VACIO ; 
+  logContainer.innerHTML += 'Hechizos Lanzados de la mano ' + (numberOfCopySpells + 1) + (' (Copiadores ' + numberOfCopySpells + ' Lanzado ' + 1 + ')') + '<br>';
+  //logContainer.innerHTML += CANTIDAD_CICLOS + numberOfCopySpells + '<br>';
 
-  console.log(CANTIDAD_DE_COPIAS + duplicatedByArtifact);
+  logContainer.innerHTML += CANTIDAD_DE_COPIAS + duplicatedByArtifact + '<br>';
   if (isArtifactDuplicatorOfDuplicationsPresent) {
-    console.log(CANTIDAD_COPIAS_ARTEFACTO + duplicatedByArtifact);
+    logContainer.innerHTML += CANTIDAD_COPIAS_ARTEFACTO + duplicatedByArtifact + '<br>';
   }
-  console.log(
-    CANTIDAD_DE_COPIAS + ' creadas por tormenta ' + duplicatedByStorm
-  );
+  logContainer.innerHTML += CANTIDAD_DE_COPIAS + ' creadas por tormenta ' + duplicatedByStorm + '<br>';
   if (isArtifactDuplicatorOfDuplicationsPresent && isStormDuplicatorPresent) {
-    console.log(
-      CANTIDAD_DE_COPIAS +
-        ' creadas por el artefacto tras tormenta ' +
-        duplicatedByArtifactForStorm
-    );
+    logContainer.innerHTML += CANTIDAD_DE_COPIAS + ' creadas por el artefacto tras tormenta ' + duplicatedByArtifactForStorm + '<br>';
   }
-  console.log(CANTIDAD_TOTAL_HECHIZOS + finalSpellsQuantityValue);
-  console.log('Daño Inicial ' + damage + ' Daño Final ' + spellDamage);
+  logContainer.innerHTML += CANTIDAD_TOTAL_HECHIZOS + finalSpellsQuantityValue + '<br>';
+  logContainer.innerHTML += 'Daño Inicial ' + damage + ' Daño Final ' + spellDamage + '<br>';
+}
+
+function createArrayOfNodesArtifactStorm(formsArray) {
+  let originalXPosition = 100;
+  let originalYPosition = 0;
+  let nodes = [];
+
+  for (let i = 0; i < formsArray.length; i++) {
+    let numeroCopias = formsArray[i];
+
+    if (numeroCopias === 1) {
+      numeroCopias = 0;
+      nodes.push({
+        key: 'HC',
+        color: 'orange',
+        location: new go.Point(originalXPosition + 100, originalYPosition - 10),
+      });
+    } else {
+      numeroCopias = (formsArray[i] - 1) / 2;
+
+      let contador = 30;
+      let variadorX;
+      let lugarPrevio;
+      for (let z = 0; z < numeroCopias; z++) {
+        variadorX = i * 100;
+
+        lugarPrevio = originalYPosition + contador;
+
+        nodes.push({
+          key: 'C',
+          color: 'blue',
+          location: new go.Point(
+            originalXPosition + 85 + variadorX,
+            originalYPosition + contador
+          ),
+        });
+        contador = lugarPrevio + 30;
+      }
+      for (let z = 0; z < numeroCopias; z++) {
+        variadorX = i * 100;
+        lugarPrevio = originalYPosition + contador;
+        nodes.push({
+          key: 'CA',
+          color: 'green',
+          location: new go.Point(
+            originalXPosition + 85 + variadorX,
+            originalYPosition + contador
+          ),
+        });
+        contador = lugarPrevio + 30;
+      }
+      contador = 30;
+      nodes.push({
+        key: 'HC/HD',
+        color: 'purple',
+        location: new go.Point(
+          originalXPosition + 80 + variadorX,
+          originalYPosition - 10
+        ),
+      });
+    }
+  }
+
+  console.log(nodes);
+  return nodes;
+}
+
+function createArrayOfLinksArtifactStorm(formsArray) {
+  let links = [];
+  let ultimoIndice = 1;
+  let ultimoIndiceDer = 0;
+  let ultimoIndiceIzquierda = 1;
+
+  for (let i = 0; i < formsArray.length - 1; i++) {
+    let numeroCopias = formsArray[i];
+    let doOnce = true;
+    let doOnce2 = true;
+    if (numeroCopias === 1) {
+      links.push({ from: 'HC', to: 'C' });
+      links.push({ from: 'HC', to: 'CA' });
+      ultimoIndiceDer = 1;
+    } else if (numeroCopias === 3) {
+      doOnce = true;
+      for (let z = 1; z < numeroCopias; z++) {
+        while (doOnce) {
+          links.push({
+            from: 'HC/HD',
+            to: 'C' + (ultimoIndiceDer + 1),
+          });
+          doOnce = false;
+          ultimoIndiceDer = ultimoIndiceDer + 1;
+        }
+        if (z % 2 == 0) {
+          links.push({
+            from: 'CA',
+            to: 'C' + (ultimoIndiceDer + 1),
+          });
+          ultimoIndiceDer = ultimoIndiceDer + 1;
+        } else {
+          links.push({
+            from: 'C',
+            to: 'C' + (ultimoIndiceDer + 1),
+          });
+          ultimoIndiceDer = ultimoIndiceDer + 1;
+        }
+      }
+      doOnce = true;
+    } else {
+      for (let z = 1; z < numeroCopias; z++) {
+        while (doOnce) {
+          links.push({
+            from: 'HC/HD' + i,
+            to: 'C' + (ultimoIndiceDer + 1),
+          });
+          doOnce = false;
+          ultimoIndiceDer = ultimoIndiceDer + 1;
+          ultimoIndiceIzquierda = ultimoIndice;
+        }
+        if (z < numeroCopias / 2) {
+          links.push({
+            from: 'C' + (ultimoIndiceIzquierda + 1),
+            to: 'C' + (ultimoIndiceDer + 1),
+          });
+          ultimoIndiceIzquierda = ultimoIndiceIzquierda + 1;
+        } else if (z > numeroCopias / 2) {
+          while (doOnce2) {
+            doOnce2 = false;
+            ultimoIndiceIzquierda = ultimoIndice;
+          }
+          links.push({
+            from: 'CA' + (ultimoIndiceIzquierda + 1),
+            to: 'C' + (ultimoIndiceDer + 1),
+          });
+          ultimoIndiceIzquierda = ultimoIndiceIzquierda + 1;
+        }
+        ultimoIndiceDer = ultimoIndiceDer + 1;
+      }
+      ultimoIndice = ultimoIndiceIzquierda;
+      doOnce = true;
+      doOnce2 = true;
+    }
+  }
+
+  console.log(links);
+  return links;
 }
 
 function createArrayOfNodesArtifact(formsArray) {
