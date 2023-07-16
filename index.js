@@ -296,21 +296,6 @@ function calculateSpellDuplicationStorm(currentSpellCasted) {
 }
 
 
-
-function printSpellDetails(numberOfCopySpells, isArtifactDuplicatorOfDuplicationsPresent) {
-  const logContainer = document.getElementById('logContainer');
-  logContainer.innerHTML = VACIO ; 
-  logContainer.innerHTML += 'Hechizos Lanzados de la mano ' + (numberOfCopySpells + 1) + (' (Copiadores ' + numberOfCopySpells + ' Lanzado ' + 1 + ')') + '<br>';
-  logContainer.innerHTML += CANTIDAD_CICLOS + numberOfCopySpells + '<br>';
-
-  if (isArtifactDuplicatorOfDuplicationsPresent) {
-    logContainer.innerHTML += CANTIDAD_COPIAS_ARTEFACTO + duplicatedByArtifact + '<br>';
-  }
-
-  logContainer.innerHTML += CANTIDAD_DE_COPIAS + numberOfCopies + '<br>';
-  logContainer.innerHTML += CANTIDAD_TOTAL_HECHIZOS + finalSpellsQuantityValue + '<br>';
-}
-
 function printDamageDetails(damage, numberOfCopySpells, isArtifactDuplicatorOfDuplicationsPresent) {
   const logContainer = document.getElementById('logContainer');
   logContainer.innerHTML = VACIO ; 
