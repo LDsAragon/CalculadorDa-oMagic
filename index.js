@@ -365,27 +365,54 @@ function createArrayOfNodesArtifactStorm(formsArray) {
 
         lugarPrevio = originalYPosition + contador;
 
-        nodes.push({
-          key: 'C',
-          color: 'blue',
-          location: new go.Point(
-            originalXPosition + 85 + variadorX,
-            originalYPosition + contador
-          ),
-        });
+        if (z>=(numeroCopias-(i))) {
+          nodes.push({
+            key: 'T',
+            color: 'red',
+            location: new go.Point(
+              originalXPosition + 85 + variadorX,
+              originalYPosition + contador
+            ),
+          });
+        } else {
+          nodes.push({
+            key: 'C',
+            color: 'blue',
+            location: new go.Point(
+              originalXPosition + 85 + variadorX,
+              originalYPosition + contador
+            ),
+          });
+        }
         contador = lugarPrevio + 30;
       }
       for (let z = 0; z < numeroCopias; z++) {
         variadorX = i * 100;
         lugarPrevio = originalYPosition + contador;
-        nodes.push({
-          key: 'CA',
-          color: 'green',
-          location: new go.Point(
-            originalXPosition + 85 + variadorX,
-            originalYPosition + contador
-          ),
-        });
+
+        if (z>=(numeroCopias-(i))) {
+          nodes.push({
+            key: 'CTA',
+            color: 'red',
+            location: new go.Point(
+              originalXPosition + 85 + variadorX,
+              originalYPosition + contador
+            ),
+          });
+  
+        }  else {
+          nodes.push({
+            key: 'CA',
+            color: 'green',
+            location: new go.Point(
+              originalXPosition + 85 + variadorX,
+              originalYPosition + contador
+            ),
+          });
+  
+        }
+        
+
         contador = lugarPrevio + 30;
       }
       contador = 30;
