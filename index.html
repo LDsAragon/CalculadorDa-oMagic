@@ -7,6 +7,14 @@
     <script src="libs/jquery.min.js"></script>
     <link rel="stylesheet" href="libs/bootstrap.min.css" />
     <style>
+
+      html, body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
       /* Custom styles for larger checkboxes */
       .custom-checkbox .custom-control-input {
         width: 2rem;
@@ -37,6 +45,7 @@
   </head>
   <body>
     <div class="container">
+      <br><br>
       <div class="form-group">
         <label for="numberOFSpells">Spells Copiadores Lanzados de la mano</label>
         <input id="numberOFSpells" class="form-control" type="number" min="0" />
