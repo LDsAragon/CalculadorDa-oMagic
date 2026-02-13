@@ -1,126 +1,592 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="index.js"></script>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTG Combo Calculator</title>
     <script src="libs/go.js"></script>
-    <script src="libs/jquery.min.js"></script>
-    <link rel="stylesheet" href="libs/bootstrap.min.css" />
+    <script src="index.js"></script>
     <style>
-
-      html, body {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-      }
-
-      /* Custom styles for larger checkboxes */
-      .custom-checkbox .custom-control-input {
-        width: 2rem;
-        height: 2rem;
-        min-width: 2rem;
-        min-height: 2rem;
-      }
-
-      /* Adjust checkbox label alignment */
-      .custom-checkbox .custom-control-label {
-        padding-left: 2.5rem;
-      }
-
-      /* Responsive styles */
-      @media (max-width: 768px) {
-        .container {
-          width: 90%;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-      }
 
-      .myDiagramDiv {
-        width: 100%;
-        max-width: 1100px;
-        height: 50vh;
-        position: relative;
-      }
+        :root {
+            --primary: #8B5CF6;
+            --primary-dark: #7C3AED;
+            --secondary: #EC4899;
+            --bg-dark: #1F2937;
+            --bg-darker: #111827;
+            --bg-card: #374151;
+            --text-light: #F9FAFB;
+            --text-gray: #9CA3AF;
+            --border: #4B5563;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            
+            /* Colores de nodos */
+            --node-purple: #A855F7;
+            --node-blue: #3B82F6;
+            --node-green: #10B981;
+            --node-red: #EF4444;
+            --node-orange: #F97316;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+        }
+
+        /* Grid Layout */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .main-grid {
+                grid-template-columns: 350px 1fr;
+            }
+        }
+
+        /* Card Styling */
+        .card {
+            background: var(--bg-card);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 4px;
+            height: 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--bg-darker);
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-light);
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        /* Toggle Switch */
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: var(--bg-darker);
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .toggle-group:hover {
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .toggle-icon {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .icon-enchant { background: var(--node-purple); }
+        .icon-artifact { background: var(--node-green); }
+        .icon-storm { background: var(--node-red); }
+        .icon-log { background: var(--warning); }
+
+        .toggle-switch {
+            position: relative;
+            width: 3rem;
+            height: 1.75rem;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border);
+            transition: 0.3s;
+            border-radius: 2rem;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 1.25rem;
+            width: 1.25rem;
+            left: 0.25rem;
+            bottom: 0.25rem;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(1.25rem);
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-darker);
+            color: var(--text-light);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        /* Stats Display */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg-darker);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            border-left: 4px solid;
+        }
+
+        .stat-card.damage { border-color: var(--danger); }
+        .stat-card.spells { border-color: var(--primary); }
+        .stat-card.copies { border-color: var(--node-blue); }
+        .stat-card.artifact { border-color: var(--node-green); }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        /* Diagram Container */
+        .diagram-container {
+            background: var(--bg-darker);
+            border-radius: 1rem;
+            padding: 1rem;
+            min-height: 400px;
+            border: 2px solid var(--border);
+        }
+
+        #myDiagramDiv {
+            width: 100%;
+            height: 500px;
+            background: var(--bg-darker);
+            border-radius: 0.5rem;
+        }
+
+        /* Logs */
+        .log-container {
+            background: var(--bg-darker);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            color: var(--text-gray);
+            margin-top: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .log-container:empty {
+            display: none;
+        }
+
+        /* Legend */
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .legend-color {
+            width: 1rem;
+            height: 1rem;
+            border-radius: 0.25rem;
+        }
+
+        .legend-color.purple { background: var(--node-purple); }
+        .legend-color.blue { background: var(--node-blue); }
+        .legend-color.green { background: var(--node-green); }
+        .legend-color.red { background: var(--node-red); }
+        .legend-color.orange { background: var(--node-orange); }
+
+        /* Mobile Optimizations */
+        @media (max-width: 767px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            #myDiagramDiv {
+                height: 400px;
+            }
+
+            .btn-group {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading State */
+        .loading {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-darker);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <div class="container">
-      <br><br>
-      <div class="form-group">
-        <label for="numberOFSpells">Spells Copiadores Lanzados de la mano</label>
-        <input id="numberOFSpells" class="form-control" type="number" min="0" />
-      </div>
-      <div class="form-group">
-        <label for="damage">Daño del último hechizo lanzado</label>
-        <input id="damage" class="form-control" type="number" min="0" />
-      </div>
-      <div class="custom-checkbox">
-        <input id="duplicatorEnchantment" class="custom-control-input" type="checkbox" />
-        <label class="custom-control-label" for="duplicatorEnchantment">¿Esta el encantamiento duplicador?</label>
-      </div>
-      <div class="custom-checkbox">
-        <input id="duplicatorArtifact" class="custom-control-input" type="checkbox" />
-        <label class="custom-control-label" for="duplicatorArtifact">¿Esta el artefacto duplicador?</label>
-      </div>
-      <div class="custom-checkbox">
-        <input id="tormentEnchantment" class="custom-control-input" type="checkbox" />
-        <label class="custom-control-label" for="tormentEnchantment">¿Esta el encantamiento de Tormenta?</label>
-      </div>
-      <div class="custom-checkbox">
-        <input id="writeLogs" class="custom-control-input" type="checkbox" />
-        <label class="custom-control-label" for="writeLogs">¿Escribir log del proceso?</label>
-      </div>
-      <br>
-      <button type="button" class="btn btn-primary" onclick="calculateDamageToGraph()">Calcular Daño</button><br><br>
-      <button type="button" class="btn btn-primary" onclick="draw()">Dibujar Diagrama</button> <br><br>
-      <button type="button" class="btn btn-primary" onclick="deleteDiagram()">Borrar Diagrama</button> <br><br>
-    </div>
+        <!-- Header -->
+        <div class="header">
+            <h1>⚡ MTG Combo Calculator</h1>
+            <p>Calculadora de daño para combos iterativos de Magic: The Gathering</p>
+        </div>
 
-    <div class="container">
-      <br>
-      <div id="myDiagramDiv" class="myDiagramDiv" style="border: 1px solid black;">
-        <canvas
-        tabindex="0"
-        style="
-          position: absolute;
-          top: 0px;
-          left: 0px;
-          z-index: 2;
-          user-select: none;
-          touch-action: none;
-          width: 298px;
-          height: 198px;
-        "
-        width="298"
-        height="198"
-        >This text is displayed if your browser does not support the Canvas
-        HTML element.</canvas
-      >
-      <div
-        style="
-          position: absolute;
-          overflow: auto;
-          width: 298px;
-          height: 198px;
-          z-index: 1;
-        "
-      >
-    </div>
-    </div>
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Control Panel -->
+            <div class="card">
+                <h2 class="card-title">Configuración</h2>
 
-    <div class="container">
-      <h4>Total casted Spells: <span id="castedSpells">0</span></h4>
-      <h4>Total Copied Spells: <span id="copiedSpells">0</span></h4>
-      <h4>Copied generated by artifact: <span id="generatedByArtifact">0</span></h4>
-      <h4>Initial Damage: <span id="initialDamage">0</span></h4>
-      <h1>Total Spell Damage: <span id="totalDamage">0</span></h1>
-    </div>
+                <!-- Number Inputs -->
+                <div class="form-group">
+                    <label class="form-label" for="numberOFSpells">Hechizos copiadores lanzados</label>
+                    <input 
+                        type="number" 
+                        id="numberOFSpells" 
+                        class="form-input" 
+                        min="0" 
+                        value="0"
+                        placeholder="0"
+                    >
+                </div>
 
-    <div class="container">
-      <br><br>
-      <div id="logContainer" class="logContainer"></div>
-      <br><br>
-    </div>
+                <div class="form-group">
+                    <label class="form-label" for="damage">Daño del último hechizo</label>
+                    <input 
+                        type="number" 
+                        id="damage" 
+                        class="form-input" 
+                        min="0" 
+                        value="1"
+                        placeholder="1"
+                    >
+                </div>
 
-  </body>
+                <!-- Toggles -->
+                <div class="form-group">
+                    <label class="form-label">Efectos activos</label>
+                    
+                    <label class="toggle-group">
+                        <div class="toggle-label">
+                            <div class="toggle-icon icon-enchant">✨</div>
+                            <span>Encantamiento duplicador</span>
+                        </div>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="duplicatorEnchantment">
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </label>
+
+                    <label class="toggle-group">
+                        <div class="toggle-label">
+                            <div class="toggle-icon icon-artifact">⚙️</div>
+                            <span>Artefacto duplicador</span>
+                        </div>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="duplicatorArtifact">
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </label>
+
+                    <label class="toggle-group">
+                        <div class="toggle-label">
+                            <div class="toggle-icon icon-storm">⛈️</div>
+                            <span>Tormenta</span>
+                        </div>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="tormentEnchantment">
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </label>
+
+                    <label class="toggle-group">
+                        <div class="toggle-label">
+                            <div class="toggle-icon icon-log">📋</div>
+                            <span>Mostrar logs</span>
+                        </div>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="writeLogs">
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Action Buttons -->
+                <button class="btn btn-primary" onclick="calculateDamageToGraph()">
+                    🎯 Calcular
+                </button>
+
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="draw()">
+                        🎨 Redibujar
+                    </button>
+                    <button class="btn btn-secondary" onclick="deleteDiagram()">
+                        🗑️ Limpiar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Panel -->
+            <div>
+                <!-- Stats -->
+                <div class="card">
+                    <h2 class="card-title">Resultados</h2>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card damage">
+                            <div class="stat-label">Daño Total</div>
+                            <div class="stat-value" id="totalDamage">0</div>
+                        </div>
+                        
+                        <div class="stat-card spells">
+                            <div class="stat-label">Hechizos Lanzados</div>
+                            <div class="stat-value" id="castedSpells">0</div>
+                        </div>
+                        
+                        <div class="stat-card copies">
+                            <div class="stat-label">Copias Totales</div>
+                            <div class="stat-value" id="copiedSpells">0</div>
+                        </div>
+                        
+                        <div class="stat-card artifact">
+                            <div class="stat-label">Por Artefacto</div>
+                            <div class="stat-value" id="generatedByArtifact">0</div>
+                        </div>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color purple"></div>
+                            <span>Lanzado</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color blue"></div>
+                            <span>Copia</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color green"></div>
+                            <span>Artefacto</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color red"></div>
+                            <span>Tormenta</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color orange"></div>
+                            <span>Inicial</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diagram -->
+                <div class="card" style="margin-top: 1.5rem;">
+                    <h2 class="card-title">Diagrama</h2>
+                    <div class="diagram-container">
+                        <div id="myDiagramDiv"></div>
+                    </div>
+                </div>
+
+                <!-- Logs -->
+                <div class="log-container" id="logContainer"></div>
+            </div>
+        </div>
+    </div>
+</body>
 </html>
