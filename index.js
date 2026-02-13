@@ -489,6 +489,9 @@ class ComboCalculator {
       }
 
       // Calcular cantidad de cada tipo
+      // iteration es 0-indexed, la columna con iteration=1 es la segunda columna (iteración real = 2)
+      // PERO para tormenta: columna 1 debe tener 1 copia de tormenta, columna 2 debe tener 2
+      // Entonces: stormCopies = iteration (no iteration+1)
       const stormCopies = iteration;
       const stormArtifactCopies = iteration;
       
@@ -514,7 +517,9 @@ class ComboCalculator {
 
       let yPosition = BASE_Y + Y_SPACING;
 
-      // Agregar copias normales (C) - azules
+      // ORDEN CORRECTO: C -> CA -> T -> CTA
+      
+      // 1. Agregar copias normales (C) - azules
       for (let copyIndex = 0; copyIndex < normalCopies; copyIndex++) {
         nodes.push({
           key: `${NODE_TYPES.COPY}_${iteration}_${copyIndex}`,
@@ -524,7 +529,7 @@ class ComboCalculator {
         yPosition += Y_SPACING;
       }
 
-      // Agregar copias de artefacto (CA) - verdes
+      // 2. Agregar copias de artefacto (CA) - verdes
       for (let artifactIndex = 0; artifactIndex < artifactCopies; artifactIndex++) {
         nodes.push({
           key: `${NODE_TYPES.ARTIFACT_COPY}_${iteration}_${artifactIndex}`,
@@ -534,7 +539,7 @@ class ComboCalculator {
         yPosition += Y_SPACING;
       }
 
-      // Agregar copias de tormenta (T) - rojas
+      // 3. Agregar copias de tormenta (T) - rojas
       for (let stormIndex = 0; stormIndex < stormCopies; stormIndex++) {
         nodes.push({
           key: `${NODE_TYPES.STORM_COPY}_${iteration}_${stormIndex}`,
@@ -544,7 +549,7 @@ class ComboCalculator {
         yPosition += Y_SPACING;
       }
 
-      // Agregar copias de artefacto de tormenta (CTA) - rojas
+      // 4. Agregar copias de artefacto de tormenta (CTA) - rojas
       for (let stormArtifactIndex = 0; stormArtifactIndex < stormArtifactCopies; stormArtifactIndex++) {
         nodes.push({
           key: `${NODE_TYPES.STORM_ARTIFACT_COPY}_${iteration}_${stormArtifactIndex}`,
@@ -571,7 +576,7 @@ class ComboCalculator {
     }
 
     if (isArtifactPresent && isStormPresent) {
-      //return this.createLinksWithArtifactAndStorm();
+      return this.createLinksWithArtifactAndStorm();
     } else if (isArtifactPresent) {
       return this.createLinksWithArtifact();
     } else if (isStormPresent) {
@@ -756,12 +761,11 @@ class ComboCalculator {
         // Agregar HC/HD (spell lanzado)
         currentColumnNodes.push(`${NODE_TYPES.CASTED_SPELL}_${i}`);
         
-        // Calcular copias normales y artefacto de esta columna (iteración i+1)
-        const currentIteration = i + 1;
-        const currentStormCopies = currentIteration;
+        // Calcular copias de esta columna (índice i)
+        const currentStormCopies = i; // Columna 1 tiene 1 tormenta, columna 2 tiene 2
         let normalCopies, artifactCopies;
         
-        if (currentIteration === 1) {
+        if (i === 1) {
           normalCopies = 1;
           artifactCopies = 1;
         } else {
@@ -791,12 +795,12 @@ class ComboCalculator {
         }
       }
       
-      // Calcular copias normales de la siguiente columna (iteración i+2)
-      const nextIteration = i + 2;
-      const nextStormCopies = nextIteration;
+      // Calcular copias normales de la siguiente columna (índice i+1)
+      const nextColumnIndex = i + 1;
+      const nextStormCopies = nextColumnIndex; // Columna 1 tiene 1, columna 2 tiene 2
       let nextNormalCopies;
       
-      if (nextIteration === 1) {
+      if (nextColumnIndex === 1) {
         nextNormalCopies = 1;
       } else {
         const nextCopiesAndArtifact = nextColumnTotal - 1 - (nextStormCopies * 2);
