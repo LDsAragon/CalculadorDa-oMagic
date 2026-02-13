@@ -72,7 +72,6 @@ class ComboCalculator {
    * @param {number} numberOfCopySpells - Hechizos copiadores lanzados de la mano
    * @param {number} damage - Daño base del último hechizo
    * @param {boolean} isDuplicatorEnchantmentPresent - Encantamiento que duplica primer spell
-   * @param {boolean} isFirstSpellOfTurn - Si es el primer spell del turno
    * @param {boolean} isArtifactPresent - Artefacto que duplica cada copia
    * @param {boolean} isStormPresent - Encantamiento de tormenta
    * @param {boolean} printLogs - Si se deben imprimir logs
@@ -82,7 +81,6 @@ class ComboCalculator {
     numberOfCopySpells,
     damage,
     isDuplicatorEnchantmentPresent,
-    isFirstSpellOfTurn,
     isArtifactPresent,
     isStormPresent,
     printLogs = false
@@ -93,7 +91,6 @@ class ComboCalculator {
     this.calculateCopies(
       numberOfCopySpells,
       isDuplicatorEnchantmentPresent,
-      isFirstSpellOfTurn,
       isArtifactPresent,
       isStormPresent
     );
@@ -114,20 +111,18 @@ class ComboCalculator {
   /**
    * Calcula el número total de copias generadas
    * @param {number} numberOfCopySpells - Hechizos copiadores lanzados
-   * @param {boolean} isDuplicatorEnchantmentPresent - Encantamiento duplicador
-   * @param {boolean} isFirstSpellOfTurn - Si es primer spell del turno
+   * @param {boolean} isDuplicatorEnchantmentPresent - Encantamiento duplicador (primer spell)
    * @param {boolean} isArtifactPresent - Artefacto duplicador
    * @param {boolean} isStormPresent - Encantamiento de tormenta
    */
   calculateCopies(
     numberOfCopySpells,
     isDuplicatorEnchantmentPresent,
-    isFirstSpellOfTurn,
     isArtifactPresent,
     isStormPresent
   ) {
-    // Si tenemos encantamiento duplicador Y es primer turno Y NO hay tormenta, +1 spell gratis
-    if (isDuplicatorEnchantmentPresent && isFirstSpellOfTurn && !isStormPresent) {
+    // Si tenemos encantamiento duplicador Y NO hay tormenta, +1 spell gratis
+    if (isDuplicatorEnchantmentPresent && !isStormPresent) {
       numberOfCopySpells = numberOfCopySpells + 1;
     }
 
@@ -839,7 +834,6 @@ function calculateDamageToGraph() {
   const numberOfSpells = Number(document.getElementById('numberOFSpells').value);
   const damage = Number(document.getElementById('damage').value);
   const duplicatorEnchantment = Boolean(document.getElementById('duplicatorEnchantment').checked);
-  const firstTurn = Boolean(document.getElementById('firstTurn').checked);
   const duplicatorArtifact = Boolean(document.getElementById('duplicatorArtifact').checked);
   const tormentEnchantment = Boolean(document.getElementById('tormentEnchantment').checked);
   const writeLogs = Boolean(document.getElementById('writeLogs').checked);
@@ -849,7 +843,6 @@ function calculateDamageToGraph() {
     numberOfSpells,
     damage,
     duplicatorEnchantment,
-    firstTurn,
     duplicatorArtifact,
     tormentEnchantment,
     writeLogs
