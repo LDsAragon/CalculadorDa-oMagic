@@ -31,7 +31,7 @@ let NODE_COLORS = {
   COPY: 'blue',                 // C - Copia normal
   ARTIFACT_COPY: 'green',       // CA - Copia generada por artefacto
   STORM_COPY: 'red',            // T - Copia generada por tormenta
-  STORM_ARTIFACT_COPY: 'red',   // CTA - Copia de artefacto de tormenta
+  STORM_ARTIFACT_COPY: 'green',   // CTA - Copia de artefacto de tormenta
 };
 
 // Tipos de nodos
