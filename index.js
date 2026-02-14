@@ -59,6 +59,8 @@ class ComboCalculator {
     this.duplicatedByArtifact = 0;
     this.duplicatedByStorm = 0;
     this.duplicatedByArtifactForStorm = 0;
+    this.duplicatorArtifactsCount = 0;
+    this.stormCount = 0;
     this.spellsArray = []; // Array con la cantidad de copias por cada iteración
     this.diagram = null;
   }
@@ -71,18 +73,18 @@ class ComboCalculator {
    * Calcula el daño total del combo
    * @param {number} numberOfCopySpells - Hechizos copiadores lanzados de la mano
    * @param {number} damage - Daño base del último hechizo
-   * @param {boolean} isDuplicatorEnchantmentPresent - Encantamiento que duplica primer spell
-   * @param {boolean} isArtifactPresent - Artefacto que duplica cada copia
-   * @param {boolean} isStormPresent - Encantamiento de tormenta
+   * @param {number} duplicatorEnchantmentsCount - Cantidad de encantamientos duplicadores
+   * @param {number} duplicatorArtifactsCount - Cantidad de artefactos duplicadores
+   * @param {number} stormCount - Cantidad de encantamientos de tormenta
    * @param {boolean} printLogs - Si se deben imprimir logs
    * @returns {number} Daño total
    */
   calculateDamage(
     numberOfCopySpells,
     damage,
-    isDuplicatorEnchantmentPresent,
-    isArtifactPresent,
-    isStormPresent,
+    duplicatorEnchantmentsCount,
+    duplicatorArtifactsCount,
+    stormCount,
     printLogs = false
   ) {
     this.reset();
@@ -90,9 +92,9 @@ class ComboCalculator {
     // Calcular cantidad de copias
     this.calculateCopies(
       numberOfCopySpells,
-      isDuplicatorEnchantmentPresent,
-      isArtifactPresent,
-      isStormPresent
+      duplicatorEnchantmentsCount,
+      duplicatorArtifactsCount,
+      stormCount
     );
 
     // Calcular daño total
@@ -111,31 +113,39 @@ class ComboCalculator {
   /**
    * Calcula el número total de copias generadas
    * @param {number} numberOfCopySpells - Hechizos copiadores lanzados
-   * @param {boolean} isDuplicatorEnchantmentPresent - Encantamiento duplicador (primer spell)
-   * @param {boolean} isArtifactPresent - Artefacto duplicador
-   * @param {boolean} isStormPresent - Encantamiento de tormenta
+   * @param {number} duplicatorEnchantmentsCount - Cantidad de encantamientos duplicadores
+   * @param {number} duplicatorArtifactsCount - Cantidad de artefactos duplicadores
+   * @param {number} stormCount - Cantidad de encantamientos de tormenta
    */
   calculateCopies(
     numberOfCopySpells,
-    isDuplicatorEnchantmentPresent,
-    isArtifactPresent,
-    isStormPresent
+    duplicatorEnchantmentsCount,
+    duplicatorArtifactsCount,
+    stormCount
   ) {
-    // Si tenemos encantamiento duplicador Y NO hay tormenta, +1 spell gratis
-    if (isDuplicatorEnchantmentPresent && !isStormPresent) {
-      numberOfCopySpells = numberOfCopySpells + 1;
+    // Cada encantamiento duplicador agrega +1 spell gratis (solo si NO hay tormenta)
+    if (duplicatorEnchantmentsCount > 0 && stormCount === 0) {
+      numberOfCopySpells = numberOfCopySpells + duplicatorEnchantmentsCount;
     }
+
+    // Guardar las cantidades para uso posterior
+    this.duplicatorArtifactsCount = duplicatorArtifactsCount;
+    this.stormCount = stormCount;
 
     // Inicializar arrays
     this.spellsArray = [];
 
+    // Determinar si hay artefactos y tormentas
+    const hasArtifact = duplicatorArtifactsCount > 0;
+    const hasStorm = stormCount > 0;
+
     // Calcular copias para cada iteración
     for (let iteration = 0; iteration <= numberOfCopySpells; iteration++) {
-      if (isArtifactPresent && isStormPresent) {
+      if (hasArtifact && hasStorm) {
         this.spellsArray[iteration] = this.calculateSpellWithArtifactAndStorm(iteration);
-      } else if (isArtifactPresent) {
+      } else if (hasArtifact) {
         this.spellsArray[iteration] = this.calculateSpellWithArtifact(iteration);
-      } else if (isStormPresent) {
+      } else if (hasStorm) {
         this.spellsArray[iteration] = this.calculateSpellWithStorm(iteration);
       } else {
         this.spellsArray[iteration] = this.calculateSpellNormal(iteration);
@@ -152,18 +162,23 @@ class ComboCalculator {
   }
 
   /**
-   * Calcula copias CON artefacto duplicador (crecimiento exponencial)
-   * Fórmula: 2^(n+1) - 1
+   * Calcula copias CON artefacto duplicador (crecimiento exponencial con múltiples artefactos)
+   * Con N artefactos: cada copia genera +N copias adicionales
+   * Fórmula con 1 artefacto: 2^(n+1) - 1
+   * Fórmula con N artefactos: ((N+1)^(n+1) - 1) / N
    * @param {number} iteration - Número de iteración actual
    * @returns {number} Total de copias hasta esta iteración
    */
   calculateSpellWithArtifact(iteration) {
+    const N = this.duplicatorArtifactsCount;
     const exponent = iteration + 1;
-    this.numberOfCopies = Math.pow(2, exponent) - 1;
+    
+    // Fórmula generalizada para N artefactos
+    this.numberOfCopies = (Math.pow(N + 1, exponent) - 1) / N;
 
-    // Calcular cuántas copias fueron generadas POR el artefacto
-    // (la mitad del total menos el original)
-    this.duplicatedByArtifact = (this.numberOfCopies - 1) / 2;
+    // Calcular cuántas copias fueron generadas POR los artefactos
+    // Con N artefactos, cada copia original genera N copias de artefacto
+    this.duplicatedByArtifact = (this.numberOfCopies - 1) * N / (N + 1);
 
     return this.numberOfCopies;
   }
@@ -181,22 +196,23 @@ class ComboCalculator {
 
   /**
    * Calcula copias CON tormenta (sin artefacto)
-   * Tormenta: cada spell N crea N-1 copias adicionales
-   * Fórmula: copias normales + copias de tormenta = (iteration + 1) + iteration
+   * Con N tormentas: cada tormenta crea iteration copias (efecto se dispara N veces)
+   * Fórmula: 1 spell + iteration copias normales + (iteration × N) copias de tormenta
    * @param {number} iteration - Número de iteración actual
    * @returns {number} Total de copias hasta esta iteración
    */
   calculateSpellWithStorm(iteration) {
     const castedSpell = 1;
-    const normalCopies = iteration; // Las copias normales que ya teníamos
-    const stormCopies = iteration; // Tormenta crea iteration copias
+    const normalCopies = iteration; // Las copias normales
+    const stormCopiesPerInstance = iteration; // Copias por cada tormenta
+    const totalStormCopies = stormCopiesPerInstance * this.stormCount; // Multiplicado por cantidad de tormentas
     
     if (iteration === 0) {
       this.numberOfCopies = 1; // Solo el spell inicial
       this.duplicatedByStorm = 0;
     } else {
-      this.duplicatedByStorm = stormCopies;
-      this.numberOfCopies = this.numberOfCopies + castedSpell + normalCopies + stormCopies;
+      this.duplicatedByStorm = totalStormCopies;
+      this.numberOfCopies = this.numberOfCopies + castedSpell + normalCopies + totalStormCopies;
     }
     
     return this.numberOfCopies;
@@ -204,17 +220,17 @@ class ComboCalculator {
 
   /**
    * Calcula copias CON artefacto Y tormenta
-   * Artefacto duplica todo: copias normales Y copias de tormenta
-   * Iteración N:
-   *   - 1 spell lanzado
-   *   - copias_previas copias normales → copias_previas copias de artefacto
-   *   - N copias de tormenta → N copias de artefacto de tormenta
+   * - N artefactos: cada copia genera +N copias (aditivo)
+   * - M tormentas: el efecto de tormenta se dispara M veces (multiplicativo)
    * @param {number} iteration - Número de iteración actual
    * @returns {number} Total de copias hasta esta iteración
    */
   calculateSpellWithArtifactAndStorm(iteration) {
     const castedSpell = 1;
-    const stormCopies = iteration;
+    const N = this.duplicatorArtifactsCount; // Cantidad de artefactos
+    const M = this.stormCount; // Cantidad de tormentas
+    const stormCopiesPerInstance = iteration; // Copias por cada tormenta
+    const totalStormCopies = stormCopiesPerInstance * M; // Total de copias de tormenta
 
     if (iteration === 0) {
       this.numberOfCopies = 1;
@@ -222,25 +238,29 @@ class ComboCalculator {
       this.duplicatedByArtifactForStorm = 0;
       this.duplicatedByArtifact = 0;
     } else if (iteration === 1) {
-      // Iteración 1: 1 lanzado + 1 copia normal + 1 copia artefacto + 1 tormenta + 1 artefacto-tormenta = 5
-      const normalCopies = iteration;
-      this.duplicatedByArtifact = normalCopies; // 1 copia de artefacto de la copia normal
-      this.duplicatedByStorm = stormCopies; // 1 copia de tormenta
-      this.duplicatedByArtifactForStorm = stormCopies; // 1 copia de artefacto de la tormenta
+      // Iteración 1:
+      // - 1 spell lanzado
+      // - 1 copia normal → N copias de artefacto
+      // - M copias de tormenta → M×N copias de artefacto de tormenta
+      const normalCopies = 1;
+      this.duplicatedByArtifact = normalCopies * N; // Artefactos duplican la copia normal
+      this.duplicatedByStorm = totalStormCopies; // M tormentas
+      this.duplicatedByArtifactForStorm = totalStormCopies * N; // Artefactos duplican las tormentas
       
       this.numberOfCopies = castedSpell + normalCopies + this.duplicatedByArtifact + 
                            this.duplicatedByStorm + this.duplicatedByArtifactForStorm;
     } else {
       // Iteración N (N >= 2):
-      // - Las copias previas se duplican (normal + artefacto)
-      // - La tormenta crea N copias que también se duplican
+      // - Todas las copias previas se multiplican por (N+1) debido a los artefactos
+      // - Se agregan las copias de tormenta y sus duplicaciones
       const previousCopies = this.numberOfCopies;
       
-      this.duplicatedByArtifact = previousCopies; // El artefacto duplica todo lo anterior
-      this.duplicatedByStorm = stormCopies;
-      this.duplicatedByArtifactForStorm = stormCopies; // El artefacto duplica las copias de tormenta
+      // Los N artefactos duplican todas las copias previas
+      this.duplicatedByArtifact = previousCopies * N;
+      this.duplicatedByStorm = totalStormCopies;
+      this.duplicatedByArtifactForStorm = totalStormCopies * N;
       
-      this.numberOfCopies = previousCopies * 2 + castedSpell + 
+      this.numberOfCopies = previousCopies * (N + 1) + castedSpell + 
                            this.duplicatedByStorm + this.duplicatedByArtifactForStorm;
     }
 
@@ -390,10 +410,11 @@ class ComboCalculator {
 
   /**
    * Crea nodos CON tormenta (sin artefacto)
+   * Con M tormentas: se crean M conjuntos de nodos T (todos rojos)
    * Estructura por columna:
    * - 1 nodo HC/HD (spell lanzado) arriba
    * - N nodos C (copias normales) en medio
-   * - M nodos T (copias de tormenta) abajo (rojos)
+   * - M×iteration nodos T (copias de tormenta) abajo (rojos)
    */
   createNodesWithStorm() {
     const nodes = [];
@@ -416,9 +437,9 @@ class ComboCalculator {
         continue;
       }
 
-      // Con tormenta: total = 1 (lanzado) + iteration (copias normales) + iteration (copias tormenta)
+      // Con tormenta: total = 1 (lanzado) + iteration (copias normales) + iteration×M (copias tormenta)
       const normalCopies = iteration;
-      const stormCopies = iteration;
+      const totalStormCopies = iteration * this.stormCount;
 
       // Agregar nodo del spell lanzado (HC/HD)
       nodes.push({
@@ -439,8 +460,8 @@ class ComboCalculator {
         yPosition += Y_SPACING;
       }
 
-      // Agregar copias de tormenta (T) - rojas
-      for (let stormIndex = 0; stormIndex < stormCopies; stormIndex++) {
+      // Agregar copias de tormenta (T) - rojas (todas las tormentas juntas)
+      for (let stormIndex = 0; stormIndex < totalStormCopies; stormIndex++) {
         nodes.push({
           key: `${NODE_TYPES.STORM_COPY}_${iteration}_${stormIndex}`,
           color: NODE_COLORS.STORM_COPY,
@@ -455,12 +476,13 @@ class ComboCalculator {
 
   /**
    * Crea nodos CON artefacto Y tormenta
+   * Con N artefactos y M tormentas
    * Estructura por columna:
    * - 1 nodo HC/HD (spell lanzado) arriba
-   * - N nodos C (copias normales) 
-   * - N nodos CA (copias de artefacto de las normales)
-   * - M nodos T (copias de tormenta) - rojas
-   * - M nodos CTA (copias de artefacto de tormenta) - rojas
+   * - X nodos C (copias normales) 
+   * - X×N nodos CA (copias de artefacto de las normales)
+   * - iteration×M nodos T (copias de tormenta) - rojas
+   * - iteration×M×N nodos CTA (copias de artefacto de tormenta) - rojas
    */
   createNodesWithArtifactAndStorm() {
     const nodes = [];
@@ -468,6 +490,8 @@ class ComboCalculator {
     const Y_SPACING = 30;
     const BASE_X = 100;
     const BASE_Y = 0;
+    const N = this.duplicatorArtifactsCount;
+    const M = this.stormCount;
 
     for (let iteration = 0; iteration < this.spellsArray.length; iteration++) {
       const totalCopies = this.spellsArray[iteration];
@@ -484,23 +508,20 @@ class ComboCalculator {
       }
 
       // Calcular cantidad de cada tipo
-      // iteration es 0-indexed, la columna con iteration=1 es la segunda columna (iteración real = 2)
-      // PERO para tormenta: columna 1 debe tener 1 copia de tormenta, columna 2 debe tener 2
-      // Entonces: stormCopies = iteration (no iteration+1)
-      const stormCopies = iteration;
-      const stormArtifactCopies = iteration;
+      const totalStormCopies = iteration * M;
+      const totalStormArtifactCopies = iteration * M * N;
       
       // Las copias normales y sus artefactos
       let normalCopies, artifactCopies;
       
       if (iteration === 1) {
         normalCopies = 1;
-        artifactCopies = 1;
+        artifactCopies = N; // N artefactos duplican la copia normal
       } else {
-        // Total - 1 (lanzado) - storm*2
-        const copiesAndArtifact = totalCopies - 1 - (stormCopies * 2);
-        normalCopies = copiesAndArtifact / 2;
-        artifactCopies = copiesAndArtifact / 2;
+        // Total - 1 (lanzado) - (storm × M) - (storm × M × N)
+        const copiesAndArtifact = totalCopies - 1 - totalStormCopies - totalStormArtifactCopies;
+        normalCopies = copiesAndArtifact / (N + 1);
+        artifactCopies = normalCopies * N;
       }
 
       // Agregar nodo del spell lanzado (HC/HD)
@@ -535,7 +556,7 @@ class ComboCalculator {
       }
 
       // 3. Agregar copias de tormenta (T) - rojas
-      for (let stormIndex = 0; stormIndex < stormCopies; stormIndex++) {
+      for (let stormIndex = 0; stormIndex < totalStormCopies; stormIndex++) {
         nodes.push({
           key: `${NODE_TYPES.STORM_COPY}_${iteration}_${stormIndex}`,
           color: NODE_COLORS.STORM_COPY,
@@ -545,7 +566,7 @@ class ComboCalculator {
       }
 
       // 4. Agregar copias de artefacto de tormenta (CTA) - rojas
-      for (let stormArtifactIndex = 0; stormArtifactIndex < stormArtifactCopies; stormArtifactIndex++) {
+      for (let stormArtifactIndex = 0; stormArtifactIndex < totalStormArtifactCopies; stormArtifactIndex++) {
         nodes.push({
           key: `${NODE_TYPES.STORM_ARTIFACT_COPY}_${iteration}_${stormArtifactIndex}`,
           color: NODE_COLORS.STORM_ARTIFACT_COPY,
@@ -685,15 +706,13 @@ class ComboCalculator {
    */
   createLinksWithStorm() {
     const links = [];
+    const M = this.stormCount;
 
     for (let i = 0; i < this.spellsArray.length - 1; i++) {
       const currentColumnTotal = this.spellsArray[i];
       const nextColumnTotal = this.spellsArray[i + 1];
       
       if (nextColumnTotal === 1) continue; // No hay copias en siguiente columna
-      
-      // En tormenta: copias normales = iteration
-      const nextColumnNormalCopies = i + 2; // i+2 porque i es 0-indexed y queremos iteration de la siguiente columna
 
       // Obtener todos los nodos de la columna actual
       const currentColumnNodes = [];
@@ -706,19 +725,20 @@ class ComboCalculator {
         currentColumnNodes.push(`${NODE_TYPES.CASTED_SPELL}_${i}`);
         
         // Agregar todas las copias normales (C)
-        const normalCopies = i + 1; // iteration + 1 para esta columna
-        for (let copyIdx = 0; copyIdx < i; copyIdx++) {
+        const normalCopies = i; // iteration
+        for (let copyIdx = 0; copyIdx < normalCopies; copyIdx++) {
           currentColumnNodes.push(`${NODE_TYPES.COPY}_${i}_${copyIdx}`);
         }
         
         // Agregar todas las copias de tormenta (T)
-        for (let stormIdx = 0; stormIdx < i; stormIdx++) {
+        const totalStormCopies = i * M;
+        for (let stormIdx = 0; stormIdx < totalStormCopies; stormIdx++) {
           currentColumnNodes.push(`${NODE_TYPES.STORM_COPY}_${i}_${stormIdx}`);
         }
       }
       
       // Vincular cada nodo de columna actual con una copia AZUL (C) de columna siguiente
-      const nextNormalCopies = i + 2; // Las copias normales de la siguiente columna
+      const nextNormalCopies = i + 1; // Las copias normales de la siguiente columna
       const maxLinks = Math.min(currentColumnNodes.length, nextNormalCopies);
       
       for (let linkIdx = 0; linkIdx < maxLinks; linkIdx++) {
@@ -739,6 +759,8 @@ class ComboCalculator {
    */
   createLinksWithArtifactAndStorm() {
     const links = [];
+    const N = this.duplicatorArtifactsCount;
+    const M = this.stormCount;
 
     for (let i = 0; i < this.spellsArray.length - 1; i++) {
       const currentColumnTotal = this.spellsArray[i];
@@ -757,16 +779,18 @@ class ComboCalculator {
         currentColumnNodes.push(`${NODE_TYPES.CASTED_SPELL}_${i}`);
         
         // Calcular copias de esta columna (índice i)
-        const currentStormCopies = i; // Columna 1 tiene 1 tormenta, columna 2 tiene 2
+        const currentTotalStormCopies = i * M;
+        const currentTotalStormArtifactCopies = i * M * N;
+        
         let normalCopies, artifactCopies;
         
         if (i === 1) {
           normalCopies = 1;
-          artifactCopies = 1;
+          artifactCopies = N;
         } else {
-          const copiesAndArtifact = currentColumnTotal - 1 - (currentStormCopies * 2);
-          normalCopies = copiesAndArtifact / 2;
-          artifactCopies = copiesAndArtifact / 2;
+          const copiesAndArtifact = currentColumnTotal - 1 - currentTotalStormCopies - currentTotalStormArtifactCopies;
+          normalCopies = copiesAndArtifact / (N + 1);
+          artifactCopies = normalCopies * N;
         }
         
         // Agregar todas las copias normales (C)
@@ -780,26 +804,27 @@ class ComboCalculator {
         }
         
         // Agregar todas las copias de tormenta (T)
-        for (let stormIdx = 0; stormIdx < currentStormCopies; stormIdx++) {
+        for (let stormIdx = 0; stormIdx < currentTotalStormCopies; stormIdx++) {
           currentColumnNodes.push(`${NODE_TYPES.STORM_COPY}_${i}_${stormIdx}`);
         }
         
         // Agregar todas las copias de artefacto de tormenta (CTA)
-        for (let stormArtifactIdx = 0; stormArtifactIdx < currentStormCopies; stormArtifactIdx++) {
+        for (let stormArtifactIdx = 0; stormArtifactIdx < currentTotalStormArtifactCopies; stormArtifactIdx++) {
           currentColumnNodes.push(`${NODE_TYPES.STORM_ARTIFACT_COPY}_${i}_${stormArtifactIdx}`);
         }
       }
       
       // Calcular copias normales de la siguiente columna (índice i+1)
       const nextColumnIndex = i + 1;
-      const nextStormCopies = nextColumnIndex; // Columna 1 tiene 1, columna 2 tiene 2
+      const nextTotalStormCopies = nextColumnIndex * M;
+      const nextTotalStormArtifactCopies = nextColumnIndex * M * N;
       let nextNormalCopies;
       
       if (nextColumnIndex === 1) {
         nextNormalCopies = 1;
       } else {
-        const nextCopiesAndArtifact = nextColumnTotal - 1 - (nextStormCopies * 2);
-        nextNormalCopies = nextCopiesAndArtifact / 2;
+        const nextCopiesAndArtifact = nextColumnTotal - 1 - nextTotalStormCopies - nextTotalStormArtifactCopies;
+        nextNormalCopies = nextCopiesAndArtifact / (N + 1);
       }
       
       // Vincular cada nodo de columna actual con una copia AZUL (C) de columna siguiente
@@ -833,18 +858,18 @@ function calculateDamageToGraph() {
   // Obtener valores del formulario
   const numberOfSpells = Number(document.getElementById('numberOFSpells').value);
   const damage = Number(document.getElementById('damage').value);
-  const duplicatorEnchantment = Boolean(document.getElementById('duplicatorEnchantment').checked);
-  const duplicatorArtifact = Boolean(document.getElementById('duplicatorArtifact').checked);
-  const tormentEnchantment = Boolean(document.getElementById('tormentEnchantment').checked);
+  const duplicatorEnchantments = Number(document.getElementById('duplicatorEnchantment').value) || 0;
+  const duplicatorArtifacts = Number(document.getElementById('duplicatorArtifact').value) || 0;
+  const tormentEnchantments = Number(document.getElementById('tormentEnchantment').value) || 0;
   const writeLogs = Boolean(document.getElementById('writeLogs').checked);
 
   // Calcular daño
   calculator.calculateDamage(
     numberOfSpells,
     damage,
-    duplicatorEnchantment,
-    duplicatorArtifact,
-    tormentEnchantment,
+    duplicatorEnchantments,
+    duplicatorArtifacts,
+    tormentEnchantments,
     writeLogs
   );
 
@@ -873,8 +898,8 @@ function updateUIStats(numberOfSpells) {
  * Actualiza el contenedor de logs
  */
 function updateLogs(numberOfSpells) {
-  const isDuplicatorArtifact = Boolean(document.getElementById('duplicatorArtifact').checked);
-  const isTormentEnchantment = Boolean(document.getElementById('tormentEnchantment').checked);
+  const duplicatorArtifacts = Number(document.getElementById('duplicatorArtifact').value) || 0;
+  const tormentEnchantments = Number(document.getElementById('tormentEnchantment').value) || 0;
   const damage = Number(document.getElementById('damage').value);
   const logContainer = document.getElementById('logContainer');
 
@@ -882,14 +907,16 @@ function updateLogs(numberOfSpells) {
   logContainer.innerHTML += `Hechizos Lanzados de la mano ${numberOfSpells + 1} (Copiadores ${numberOfSpells} + Lanzado 1)<br>`;
   logContainer.innerHTML += `${LABELS.COPIES}${calculator.numberOfCopies}<br>`;
   
-  if (isDuplicatorArtifact) {
+  if (duplicatorArtifacts > 0) {
     logContainer.innerHTML += `${LABELS.ARTIFACT_COPIES}${calculator.duplicatedByArtifact}<br>`;
+    logContainer.innerHTML += `Artefactos activos: ${duplicatorArtifacts}<br>`;
   }
   
-  if (isTormentEnchantment) {
+  if (tormentEnchantments > 0) {
     logContainer.innerHTML += `Copias creadas por tormenta: ${calculator.duplicatedByStorm}<br>`;
+    logContainer.innerHTML += `Tormentas activas: ${tormentEnchantments}<br>`;
     
-    if (isDuplicatorArtifact) {
+    if (duplicatorArtifacts > 0) {
       logContainer.innerHTML += `Copias de artefacto de tormenta: ${calculator.duplicatedByArtifactForStorm}<br>`;
     }
   }
@@ -949,8 +976,8 @@ function draw() {
     myDiagram.layout = new go.Layout();
 
     // Obtener si hay artefacto y tormenta
-    const isArtifactPresent = Boolean(document.getElementById('duplicatorArtifact').checked);
-    const isStormPresent = Boolean(document.getElementById('tormentEnchantment').checked);
+    const isArtifactPresent = (Number(document.getElementById('duplicatorArtifact').value) || 0) > 0;
+    const isStormPresent = (Number(document.getElementById('tormentEnchantment').value) || 0) > 0;
 
     // Crear nodos y enlaces
     const nodes = calculator.createNodes(isArtifactPresent, isStormPresent);

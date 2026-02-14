@@ -458,43 +458,121 @@
                     >
                 </div>
 
-                <!-- Toggles -->
+                <!-- Mode Toggle -->
                 <div class="form-group">
-                    <label class="form-label">Efectos activos</label>
-                    
-                    <label class="toggle-group">
+                    <label class="toggle-group" style="background: rgba(139, 92, 246, 0.1); border: 2px solid var(--primary);">
                         <div class="toggle-label">
-                            <div class="toggle-icon icon-enchant">✨</div>
-                            <span>Encantamiento duplicador</span>
+                            <div class="toggle-icon" style="background: var(--primary);">🎛️</div>
+                            <span style="font-weight: 600;">Modo Avanzado</span>
                         </div>
                         <div class="toggle-switch">
-                            <input type="checkbox" id="duplicatorEnchantment">
+                            <input type="checkbox" id="advancedMode" onchange="toggleAdvancedMode()">
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Simple Mode (Toggles) -->
+                <div id="simpleModeControls" class="form-group">
+                    <label class="form-label">Efectos activos</label>
+                    
+                    <label class="toggle-group" id="enchantmentToggle">
+                        <div class="toggle-label">
+                            <div class="toggle-icon icon-enchant">✨</div>
+                            <span>Permanente duplicador</span>
+                        </div>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="duplicatorEnchantmentToggle" onchange="syncToggleToNumber('duplicatorEnchantment', this.checked)">
                             <span class="toggle-slider"></span>
                         </div>
                     </label>
 
-                    <label class="toggle-group">
+                    <label class="toggle-group" id="artifactToggle">
                         <div class="toggle-label">
                             <div class="toggle-icon icon-artifact">⚙️</div>
                             <span>Artefacto duplicador</span>
                         </div>
                         <div class="toggle-switch">
-                            <input type="checkbox" id="duplicatorArtifact">
+                            <input type="checkbox" id="duplicatorArtifactToggle" onchange="syncToggleToNumber('duplicatorArtifact', this.checked)">
                             <span class="toggle-slider"></span>
                         </div>
                     </label>
 
-                    <label class="toggle-group">
+                    <label class="toggle-group" id="stormToggle">
                         <div class="toggle-label">
                             <div class="toggle-icon icon-storm">⛈️</div>
                             <span>Tormenta</span>
                         </div>
                         <div class="toggle-switch">
-                            <input type="checkbox" id="tormentEnchantment">
+                            <input type="checkbox" id="tormentEnchantmentToggle" onchange="syncToggleToNumber('tormentEnchantment', this.checked)">
                             <span class="toggle-slider"></span>
                         </div>
                     </label>
+                </div>
 
+                <!-- Advanced Mode (Numbers) -->
+                <div id="advancedModeControls" class="form-group" style="display: none;">
+                    <label class="form-label">Cantidades específicas</label>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label class="form-label" for="duplicatorEnchantment">
+                            <span style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <span class="toggle-icon icon-enchant" style="width: 1.5rem; height: 1.5rem; font-size: 1rem;">✨</span>
+                                Permanentes duplicadores
+                            </span>
+                        </label>
+                        <input 
+                            type="number" 
+                            id="duplicatorEnchantment" 
+                            class="form-input" 
+                            min="0" 
+                            value="0"
+                            placeholder="Cantidad"
+                            onchange="syncNumberToToggle('duplicatorEnchantmentToggle', this.value)"
+                        >
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label class="form-label" for="duplicatorArtifact">
+                            <span style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <span class="toggle-icon icon-artifact" style="width: 1.5rem; height: 1.5rem; font-size: 1rem;">⚙️</span>
+                                Artefactos duplicadores
+                            </span>
+                        </label>
+                        <input 
+                            type="number" 
+                            id="duplicatorArtifact" 
+                            class="form-input" 
+                            min="0" 
+                            value="0"
+                            placeholder="Cantidad"
+                            onchange="syncNumberToToggle('duplicatorArtifactToggle', this.value)"
+                        >
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label class="form-label" for="tormentEnchantment">
+                            <span style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <span class="toggle-icon icon-storm" style="width: 1.5rem; height: 1.5rem; font-size: 1rem;">⛈️</span>
+                                Encantamientos de tormenta
+                            </span>
+                        </label>
+                        <input 
+                            type="number" 
+                            id="tormentEnchantment" 
+                            class="form-input" 
+                            min="0" 
+                            value="0"
+                            placeholder="Cantidad"
+                            onchange="syncNumberToToggle('tormentEnchantmentToggle', this.value)"
+                        >
+                    </div>
+                </div>
+
+                <!-- Options -->
+                <div class="form-group">
+                    <label class="form-label">Opciones</label>
+                    
                     <label class="toggle-group">
                         <div class="toggle-label">
                             <div class="toggle-icon icon-log">📋</div>
@@ -588,5 +666,42 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Sincronización entre modo simple y avanzado
+        function toggleAdvancedMode() {
+            const isAdvanced = document.getElementById('advancedMode').checked;
+            const simpleControls = document.getElementById('simpleModeControls');
+            const advancedControls = document.getElementById('advancedModeControls');
+            
+            if (isAdvanced) {
+                simpleControls.style.display = 'none';
+                advancedControls.style.display = 'block';
+            } else {
+                simpleControls.style.display = 'block';
+                advancedControls.style.display = 'none';
+            }
+        }
+
+        // Sincronizar toggle → número (cuando activas un toggle, setea el número a 1)
+        function syncToggleToNumber(numberId, isChecked) {
+            const numberInput = document.getElementById(numberId);
+            numberInput.value = isChecked ? 1 : 0;
+        }
+
+        // Sincronizar número → toggle (cuando cambias un número, activa/desactiva el toggle)
+        function syncNumberToToggle(toggleId, value) {
+            const toggle = document.getElementById(toggleId);
+            toggle.checked = value > 0;
+        }
+
+        // Inicializar sincronización al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sincronizar valores iniciales
+            syncNumberToToggle('duplicatorEnchantmentToggle', document.getElementById('duplicatorEnchantment').value);
+            syncNumberToToggle('duplicatorArtifactToggle', document.getElementById('duplicatorArtifact').value);
+            syncNumberToToggle('tormentEnchantmentToggle', document.getElementById('tormentEnchantment').value);
+        });
+    </script>
 </body>
 </html>
