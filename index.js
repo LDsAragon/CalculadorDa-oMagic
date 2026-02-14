@@ -24,8 +24,8 @@ const LABELS = {
   COPIES: 'Cantidad de Copias ',
 };
 
-// Colores para los nodos del grafo
-const NODE_COLORS = {
+// Colores para los nodos del grafo (ahora dinámicos según el tema)
+let NODE_COLORS = {
   INITIAL_SPELL: 'orange',      // HC - Hechizo inicial (solo cuando n=0)
   CASTED_SPELL: 'purple',       // HC/HD - Hechizo copiador lanzado
   COPY: 'blue',                 // C - Copia normal
