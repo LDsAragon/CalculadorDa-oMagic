@@ -887,7 +887,6 @@ function updateUIStats(numberOfSpells) {
   document.getElementById('castedSpells').textContent = numberOfSpells + 1;
   document.getElementById('copiedSpells').textContent = calculator.numberOfCopies;
   document.getElementById('generatedByArtifact').textContent = calculator.duplicatedByArtifact;
-  document.getElementById('initialDamage').textContent = document.getElementById('damage').value;
   document.getElementById('totalDamage').textContent = calculator.spellDamage;
 
   // Actualizar logs
