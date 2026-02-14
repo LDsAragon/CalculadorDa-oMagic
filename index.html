@@ -35,6 +35,126 @@
             --node-orange: #F97316;
         }
 
+        /* Theme: Cyber Pink */
+        [data-theme="cyber"] {
+            --primary: #FF1493;
+            --primary-dark: #C71585;
+            --secondary: #00FFFF;
+            --bg-dark: #1a0a1f;
+            --bg-darker: #0d0510;
+            --bg-card: #2d1b3d;
+            --node-purple: #FF00FF;
+            --node-blue: #00FFFF;
+            --node-green: #00FF00;
+            --node-red: #FF4500;
+            --node-orange: #FF1493;
+        }
+
+        /* Theme: Forest */
+        [data-theme="forest"] {
+            --primary: #10B981;
+            --primary-dark: #059669;
+            --secondary: #34D399;
+            --bg-dark: #1a2e1a;
+            --bg-darker: #0f1f0f;
+            --bg-card: #2d4a2d;
+            --node-purple: #8B4789;
+            --node-blue: #4682B4;
+            --node-green: #228B22;
+            --node-red: #B22222;
+            --node-orange: #FFD700;
+        }
+
+        /* Theme: Fire Ice */
+        [data-theme="fireice"] {
+            --primary: #FF6B35;
+            --primary-dark: #E63946;
+            --secondary: #00B4D8;
+            --bg-dark: #1d1d2e;
+            --bg-darker: #0f0f1e;
+            --bg-card: #2e2e4a;
+            --node-purple: #9B59B6;
+            --node-blue: #00BFFF;
+            --node-green: #5DADE2;
+            --node-red: #FF4500;
+            --node-orange: #FFA500;
+        }
+
+        /* Theme: Pastel */
+        [data-theme="pastel"] {
+            --primary: #B794F4;
+            --primary-dark: #9F7AEA;
+            --secondary: #F687B3;
+            --bg-dark: #2D3748;
+            --bg-darker: #1A202C;
+            --bg-card: #4A5568;
+            --node-purple: #DDA0DD;
+            --node-blue: #ADD8E6;
+            --node-green: #98FB98;
+            --node-red: #F08080;
+            --node-orange: #FFDAB9;
+        }
+
+        /* Theme: Dark Elite */
+        [data-theme="elite"] {
+            --primary: #6366F1;
+            --primary-dark: #4F46E5;
+            --secondary: #8B5CF6;
+            --bg-dark: #0F172A;
+            --bg-darker: #020617;
+            --bg-card: #1E293B;
+            --node-purple: #4B0082;
+            --node-blue: #191970;
+            --node-green: #008080;
+            --node-red: #8B0000;
+            --node-orange: #FFD700;
+        }
+
+        /* Theme: Rainbow */
+        [data-theme="rainbow"] {
+            --primary: #8B5CF6;
+            --primary-dark: #7C3AED;
+            --secondary: #EC4899;
+            --bg-dark: #1F2937;
+            --bg-darker: #111827;
+            --bg-card: #374151;
+            --node-purple: #8A2BE2;
+            --node-blue: #1E90FF;
+            --node-green: #32CD32;
+            --node-red: #FF4500;
+            --node-orange: #FFD700;
+        }
+
+        /* Theme: Monochrome */
+        [data-theme="mono"] {
+            --primary: #6B7280;
+            --primary-dark: #4B5563;
+            --secondary: #9CA3AF;
+            --bg-dark: #1F2937;
+            --bg-darker: #111827;
+            --bg-card: #374151;
+            --node-purple: #4B5563;
+            --node-blue: #6B7280;
+            --node-green: #9CA3AF;
+            --node-red: #374151;
+            --node-orange: #FFD700;
+        }
+
+        /* Theme: Magic Classic */
+        [data-theme="magic"] {
+            --primary: #9B59B6;
+            --primary-dark: #8E44AD;
+            --secondary: #E74C3C;
+            --bg-dark: #2C2C54;
+            --bg-darker: #1B1B3A;
+            --bg-card: #40407A;
+            --node-purple: #9B59B6;
+            --node-blue: #4169E1;
+            --node-green: #C0C0C0;
+            --node-red: #DC143C;
+            --node-orange: #FFD700;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
@@ -458,6 +578,26 @@
                     >
                 </div>
 
+                <!-- Skin Selector -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <span style="display: flex; align-items: center; gap: 0.5rem;">
+                            🎨 Tema visual
+                        </span>
+                    </label>
+                    <select id="skinSelector" class="form-input" onchange="changeSkin(this.value)" style="cursor: pointer;">
+                        <option value="default">🌟 Default (Púrpura)</option>
+                        <option value="cyber">💖 Cyber Pink</option>
+                        <option value="forest">🌲 Bosque Místico</option>
+                        <option value="fireice">🔥 Fuego y Hielo</option>
+                        <option value="pastel">🍬 Pastel Suave</option>
+                        <option value="elite">⚫ Dark Elite</option>
+                        <option value="rainbow">🌈 Arcoíris</option>
+                        <option value="mono">⬛ Monocromo</option>
+                        <option value="magic">✨ Magic Clásico</option>
+                    </select>
+                </div>
+
                 <!-- Mode Toggle -->
                 <div class="form-group">
                     <label class="toggle-group" style="background: rgba(139, 92, 246, 0.1); border: 2px solid var(--primary);">
@@ -479,7 +619,7 @@
                     <label class="toggle-group" id="enchantmentToggle">
                         <div class="toggle-label">
                             <div class="toggle-icon icon-enchant">✨</div>
-                            <span>Permanente duplicador</span>
+                            <span>Encantamiento duplicador</span>
                         </div>
                         <div class="toggle-switch">
                             <input type="checkbox" id="duplicatorEnchantmentToggle" onchange="syncToggleToNumber('duplicatorEnchantment', this.checked)">
@@ -518,7 +658,7 @@
                         <label class="form-label" for="duplicatorEnchantment">
                             <span style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
                                 <span class="toggle-icon icon-enchant" style="width: 1.5rem; height: 1.5rem; font-size: 1rem;">✨</span>
-                                Permanentes duplicadores
+                                Encantamientos duplicadores
                             </span>
                         </label>
                         <input 
@@ -668,6 +808,120 @@
     </div>
 
     <script>
+        // Mapeo de temas a colores de nodos
+        const themeNodeColors = {
+            default: {
+                INITIAL_SPELL: '#F97316',
+                CASTED_SPELL: '#A855F7',
+                COPY: '#3B82F6',
+                ARTIFACT_COPY: '#10B981',
+                STORM_COPY: '#EF4444',
+                STORM_ARTIFACT_COPY: '#EF4444'
+            },
+            cyber: {
+                INITIAL_SPELL: '#FF1493',
+                CASTED_SPELL: '#FF00FF',
+                COPY: '#00FFFF',
+                ARTIFACT_COPY: '#00FF00',
+                STORM_COPY: '#FF4500',
+                STORM_ARTIFACT_COPY: '#FF4500'
+            },
+            forest: {
+                INITIAL_SPELL: '#FFD700',
+                CASTED_SPELL: '#8B4789',
+                COPY: '#4682B4',
+                ARTIFACT_COPY: '#228B22',
+                STORM_COPY: '#B22222',
+                STORM_ARTIFACT_COPY: '#B22222'
+            },
+            fireice: {
+                INITIAL_SPELL: '#FFA500',
+                CASTED_SPELL: '#9B59B6',
+                COPY: '#00BFFF',
+                ARTIFACT_COPY: '#5DADE2',
+                STORM_COPY: '#FF4500',
+                STORM_ARTIFACT_COPY: '#FF4500'
+            },
+            pastel: {
+                INITIAL_SPELL: '#FFDAB9',
+                CASTED_SPELL: '#DDA0DD',
+                COPY: '#ADD8E6',
+                ARTIFACT_COPY: '#98FB98',
+                STORM_COPY: '#F08080',
+                STORM_ARTIFACT_COPY: '#F08080'
+            },
+            elite: {
+                INITIAL_SPELL: '#FFD700',
+                CASTED_SPELL: '#4B0082',
+                COPY: '#191970',
+                ARTIFACT_COPY: '#008080',
+                STORM_COPY: '#8B0000',
+                STORM_ARTIFACT_COPY: '#8B0000'
+            },
+            rainbow: {
+                INITIAL_SPELL: '#FFD700',
+                CASTED_SPELL: '#8A2BE2',
+                COPY: '#1E90FF',
+                ARTIFACT_COPY: '#32CD32',
+                STORM_COPY: '#FF4500',
+                STORM_ARTIFACT_COPY: '#FF4500'
+            },
+            mono: {
+                INITIAL_SPELL: '#FFD700',
+                CASTED_SPELL: '#4B5563',
+                COPY: '#6B7280',
+                ARTIFACT_COPY: '#9CA3AF',
+                STORM_COPY: '#374151',
+                STORM_ARTIFACT_COPY: '#374151'
+            },
+            magic: {
+                INITIAL_SPELL: '#FFD700',
+                CASTED_SPELL: '#9B59B6',
+                COPY: '#4169E1',
+                ARTIFACT_COPY: '#C0C0C0',
+                STORM_COPY: '#DC143C',
+                STORM_ARTIFACT_COPY: '#DC143C'
+            }
+        };
+
+        // Cambiar skin
+        function changeSkin(theme) {
+            // Cambiar tema del HTML
+            if (theme === 'default') {
+                document.documentElement.removeAttribute('data-theme');
+            } else {
+                document.documentElement.setAttribute('data-theme', theme);
+            }
+
+            // Actualizar colores de nodos en el código JavaScript
+            const colors = themeNodeColors[theme];
+            
+            // Actualizar las constantes de colores en memoria
+            if (typeof NODE_COLORS !== 'undefined') {
+                NODE_COLORS.INITIAL_SPELL = colors.INITIAL_SPELL;
+                NODE_COLORS.CASTED_SPELL = colors.CASTED_SPELL;
+                NODE_COLORS.COPY = colors.COPY;
+                NODE_COLORS.ARTIFACT_COPY = colors.ARTIFACT_COPY;
+                NODE_COLORS.STORM_COPY = colors.STORM_COPY;
+                NODE_COLORS.STORM_ARTIFACT_COPY = colors.STORM_ARTIFACT_COPY;
+            }
+
+            // Guardar preferencia en localStorage
+            localStorage.setItem('selectedTheme', theme);
+
+            // Redibujar el diagrama si existe
+            if (calculator && calculator.spellsArray && calculator.spellsArray.length > 0) {
+                draw();
+            }
+        }
+
+        // Cargar tema guardado al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('selectedTheme') || 'default';
+            document.getElementById('skinSelector').value = savedTheme;
+            changeSkin(savedTheme);
+        });
+
         // Sincronización entre modo simple y avanzado
         function toggleAdvancedMode() {
             const isAdvanced = document.getElementById('advancedMode').checked;

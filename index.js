@@ -24,14 +24,14 @@ const LABELS = {
   COPIES: 'Cantidad de Copias ',
 };
 
-// Colores para los nodos del grafo
-const NODE_COLORS = {
+// Colores para los nodos del grafo (ahora dinámicos según el tema)
+let NODE_COLORS = {
   INITIAL_SPELL: 'orange',      // HC - Hechizo inicial (solo cuando n=0)
   CASTED_SPELL: 'purple',       // HC/HD - Hechizo copiador lanzado
   COPY: 'blue',                 // C - Copia normal
   ARTIFACT_COPY: 'green',       // CA - Copia generada por artefacto
   STORM_COPY: 'red',            // T - Copia generada por tormenta
-  STORM_ARTIFACT_COPY: 'green',   // CTA - Copia de artefacto de tormenta
+  STORM_ARTIFACT_COPY: 'red',   // CTA - Copia de artefacto de tormenta
 };
 
 // Tipos de nodos
